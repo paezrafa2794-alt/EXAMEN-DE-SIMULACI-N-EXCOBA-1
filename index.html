@@ -1,0 +1,1933 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EXAMEN DE SIMULACIÓN #1 EXCOBA — Médico Cirujano y Partero</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:wght@300;700&display=swap');
+
+  :root {
+    --bg: #0e1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3348;
+    --accent: #3b82f6;
+    --accent2: #10b981;
+    --danger: #ef4444;
+    --warn: #f59e0b;
+    --text: #e2e8f0;
+    --text2: #94a3b8;
+    --text3: #64748b;
+    --correct: #10b981;
+    --incorrect: #ef4444;
+    --omit: #94a3b8;
+    --marked: #f59e0b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── UTILITIES ── */
+  .hidden { display: none !important; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 20px; border-radius: 8px; border: none;
+    font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: all .18s;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #2563eb; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--border); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn-danger:hover { background: #dc2626; }
+  .btn-success { background: var(--accent2); color: #fff; }
+  .btn-success:hover { background: #059669; }
+  .btn-warn { background: var(--warn); color: #000; }
+  .btn-warn:hover { background: #d97706; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+  /* ── SCREEN: LOGIN ── */
+  #screen-login {
+    min-height: 100vh;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px;
+    background: radial-gradient(ellipse at 60% 20%, #1e3a5f 0%, var(--bg) 60%);
+  }
+  .login-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%; max-width: 500px;
+    box-shadow: 0 24px 48px rgba(0,0,0,.5);
+  }
+  .login-logo {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+  }
+  .login-logo .icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .login-logo h1 { font-size: 20px; font-weight: 700; color: var(--text); }
+  .login-logo p { font-size: 12px; color: var(--text3); }
+  .login-subtitle {
+    font-size: 13px; color: var(--text2); margin-bottom: 28px;
+    padding-bottom: 20px; border-bottom: 1px solid var(--border);
+  }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block; font-size: 13px; font-weight: 500;
+    color: var(--text2); margin-bottom: 6px;
+  }
+  .form-group label .req { color: var(--danger); margin-left: 2px; }
+  .form-group input, .form-group select {
+    width: 100%; padding: 10px 14px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    transition: border-color .15s;
+    outline: none;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+  .form-group input::placeholder { color: var(--text3); }
+  .form-group select option { background: var(--surface2); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .login-card .btn-primary { width: 100%; justify-content: center; padding: 12px; font-size: 15px; margin-top: 8px; }
+  .login-info {
+    margin-top: 20px; padding: 14px; background: rgba(59,130,246,.08);
+    border: 1px solid rgba(59,130,246,.2); border-radius: 8px;
+    font-size: 12px; color: var(--text2);
+  }
+  .login-info strong { color: var(--accent); }
+
+  /* ── SCREEN: EXAM (GRID MENU) ── */
+  #screen-exam { display: flex; flex-direction: column; min-height: 100vh; }
+
+  .exam-topbar {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px; padding: 10px 20px;
+    flex-wrap: wrap;
+  }
+  .topbar-logo { font-size: 13px; font-weight: 700; color: var(--accent); white-space: nowrap; }
+
+  .progress-bar-wrap {
+    width: 100%; height: 4px; background: var(--border);
+    border-radius: 2px; overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width .4s;
+  }
+
+  /* STATS BAR */
+  .stats-bar {
+    background: var(--surface2); border-bottom: 1px solid var(--border);
+    padding: 10px 24px; display: flex; align-items: center; gap: 20px;
+    flex-wrap: wrap; font-size: 13px;
+  }
+  .stats-bar-item { display: flex; align-items: center; gap: 6px; color: var(--text2); }
+  .stats-bar-item span:nth-child(2) { font-weight: 700; color: var(--text); }
+  .stats-bar-sep { flex: 1; }
+  .sb-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .answered-dot { background: var(--accent); }
+  .pending-dot { background: var(--border); }
+  .marked-dot { background: var(--warn); }
+  .legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text3); }
+  .leg-box { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
+  .leg-pending { background: var(--surface2); border: 1px solid var(--border); }
+  .leg-answered { background: rgba(59,130,246,.25); border: 1px solid var(--accent); }
+  .leg-marked { background: rgba(245,158,11,.2); border: 1px solid var(--warn); }
+
+  /* GRID MENU */
+  .grid-menu-wrap {
+    flex: 1; overflow-y: auto; padding: 24px;
+  }
+  .area-section { margin-bottom: 32px; }
+  .area-section-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+  }
+  .area-section-header h3 {
+    font-size: 14px; font-weight: 600; color: var(--text);
+  }
+  .area-section-header .area-badge {
+    font-size: 11px; color: var(--text3); background: var(--surface2);
+    border: 1px solid var(--border); padding: 2px 10px; border-radius: 20px;
+  }
+  .area-section-header .area-pct {
+    font-size: 11px; margin-left: auto; color: var(--text3);
+  }
+  .area-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+    gap: 8px;
+  }
+  .grid-q-btn {
+    aspect-ratio: 1; border-radius: 8px; border: 2px solid var(--border);
+    background: var(--surface2); font-size: 11px; font-weight: 700;
+    color: var(--text3); cursor: pointer; transition: all .14s;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 2px; position: relative;
+    font-family: 'Inter', sans-serif;
+  }
+  .grid-q-btn:hover { border-color: var(--accent); color: var(--text); transform: scale(1.06); }
+  .grid-q-btn.answered { background: rgba(59,130,246,.18); border-color: var(--accent); color: var(--accent); }
+  .grid-q-btn.marked { background: rgba(245,158,11,.15); border-color: var(--warn); color: var(--warn); }
+  .grid-q-btn.current-open { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .grid-q-btn .check-icon {
+    font-size: 9px; position: absolute; top: 3px; right: 4px;
+    display: none;
+  }
+  .grid-q-btn.answered .check-icon { display: block; color: var(--accent); }
+  .grid-q-btn.marked .check-icon { display: block; color: var(--warn); content: '📌'; }
+
+  /* ── QUESTION DRAWER ── */
+  #question-drawer {
+    position: fixed; inset: 0; z-index: 200;
+    display: flex;
+  }
+  .drawer-backdrop {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,.55); backdrop-filter: blur(2px);
+  }
+  .drawer-panel {
+    position: relative; margin-left: auto;
+    width: min(680px, 100%); height: 100%;
+    background: var(--surface); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    box-shadow: -12px 0 40px rgba(0,0,0,.5);
+    animation: slideIn .22s ease;
+  }
+  @keyframes slideIn { from { transform: translateX(60px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+  .drawer-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    flex-shrink: 0; flex-wrap: wrap;
+  }
+  .drawer-close {
+    margin-left: auto; background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text2); padding: 6px 14px; border-radius: 8px; cursor: pointer;
+    font-size: 13px; font-family: 'Inter', sans-serif; white-space: nowrap;
+    transition: all .14s;
+  }
+  .drawer-close:hover { background: var(--border); color: var(--text); }
+  .drawer-body {
+    flex: 1; overflow-y: auto; padding: 24px 24px 16px;
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .drawer-footer {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 20px; border-top: 1px solid var(--border);
+    flex-shrink: 0; flex-wrap: wrap;
+  }
+
+  /* Q elements used in drawer */
+  .q-num {
+    font-size: 12px; font-weight: 600; color: var(--accent);
+    background: rgba(59,130,246,.12); padding: 3px 10px; border-radius: 20px;
+    white-space: nowrap;
+  }
+  .q-area-tag {
+    font-size: 11px; color: var(--text3);
+    background: var(--surface2); padding: 3px 10px; border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+  .q-diff { font-size: 11px; padding: 3px 10px; border-radius: 20px; border: 1px solid; white-space: nowrap; }
+  .q-diff.basico { color: var(--accent2); border-color: var(--accent2); }
+  .q-diff.intermedio { color: var(--warn); border-color: var(--warn); }
+  .q-diff.avanzado { color: var(--danger); border-color: var(--danger); }
+  .q-marked-badge {
+    font-size: 11px; color: var(--warn); background: rgba(245,158,11,.1);
+    border: 1px solid var(--warn); padding: 3px 10px; border-radius: 20px;
+  }
+  .q-text {
+    font-size: 15px; line-height: 1.75; color: var(--text);
+    font-family: 'Merriweather', serif; font-weight: 300;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 18px 22px;
+  }
+  .q-text .reading-passage {
+    font-size: 13px; color: var(--text2); border-left: 3px solid var(--accent);
+    padding-left: 14px; margin-bottom: 14px; font-style: italic;
+  }
+  .q-text .question-stem { font-weight: 600; color: var(--text); font-style: normal; font-size: 14px; }
+  .options-grid { display: flex; flex-direction: column; gap: 10px; }
+  .option-btn {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 14px 18px; background: var(--surface2);
+    border: 2px solid var(--border); border-radius: 10px;
+    cursor: pointer; transition: all .15s; text-align: left;
+    font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text);
+    width: 100%;
+  }
+  .option-btn:hover { border-color: var(--accent); background: rgba(59,130,246,.06); }
+  .option-btn.selected { border-color: var(--accent); background: rgba(59,130,246,.12); }
+  .option-btn.correct-show { border-color: var(--correct); background: rgba(16,185,129,.12); }
+  .option-btn.incorrect-show { border-color: var(--incorrect); background: rgba(239,68,68,.1); }
+  .opt-letter {
+    min-width: 28px; height: 28px; border-radius: 50%;
+    background: var(--border); display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; color: var(--text2);
+    transition: all .15s; flex-shrink: 0;
+  }
+  .option-btn.selected .opt-letter { background: var(--accent); color: #fff; }
+  .option-btn.correct-show .opt-letter { background: var(--correct); color: #fff; }
+  .option-btn.incorrect-show .opt-letter { background: var(--incorrect); color: #fff; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.7);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 200; padding: 16px;
+  }
+  .modal-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px 32px;
+    max-width: 480px; width: 100%;
+    box-shadow: 0 32px 64px rgba(0,0,0,.6);
+  }
+  .modal-box h2 { font-size: 20px; margin-bottom: 10px; }
+  .modal-box p { font-size: 14px; color: var(--text2); margin-bottom: 20px; line-height: 1.6; }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+
+  /* ── SCREEN: RESULTS ── */
+  #screen-results { padding: 28px 24px; max-width: 900px; margin: 0 auto; }
+  .results-header {
+    text-align: center; margin-bottom: 36px; padding-bottom: 28px;
+    border-bottom: 1px solid var(--border);
+  }
+  .results-header .big-score {
+    font-size: 72px; font-weight: 700; line-height: 1;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .results-header .score-label { font-size: 14px; color: var(--text3); margin-top: 4px; }
+  .results-header h2 { font-size: 22px; margin-top: 12px; }
+  .results-header .meta { font-size: 13px; color: var(--text2); margin-top: 4px; }
+
+  .results-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; text-align: center;
+  }
+  .stat-card .num { font-size: 36px; font-weight: 700; }
+  .stat-card .lbl { font-size: 12px; color: var(--text3); margin-top: 4px; }
+  .stat-card.correct .num { color: var(--correct); }
+  .stat-card.incorrect .num { color: var(--incorrect); }
+  .stat-card.omit .num { color: var(--omit); }
+
+  .section-title { font-size: 16px; font-weight: 600; margin: 24px 0 12px; color: var(--text2); }
+  .area-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .area-table th {
+    text-align: left; padding: 8px 12px; font-size: 11px;
+    text-transform: uppercase; letter-spacing: .05em; color: var(--text3);
+    border-bottom: 1px solid var(--border);
+  }
+  .area-table td {
+    padding: 10px 12px; border-bottom: 1px solid rgba(42,51,72,.5);
+    color: var(--text);
+  }
+  .area-table tr:hover td { background: var(--surface2); }
+  .pct-bar-wrap { height: 6px; background: var(--border); border-radius: 3px; width: 100px; display: inline-block; vertical-align: middle; }
+  .pct-bar-fill { height: 100%; border-radius: 3px; }
+
+  .recommendations {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px; margin-top: 20px;
+  }
+  .recommendations h3 { font-size: 15px; margin-bottom: 12px; }
+  .rec-item {
+    display: flex; gap: 10px; margin-bottom: 10px;
+    font-size: 13px; color: var(--text2); align-items: flex-start;
+  }
+  .rec-item .icon { font-size: 16px; flex-shrink: 0; }
+
+  .results-actions {
+    display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap;
+  }
+
+  .timer-box {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 6px 14px; border-radius: 8px; font-size: 14px;
+    font-family: monospace; font-weight: 700; white-space: nowrap;
+  }
+  .timer-box.warn { border-color: var(--warn); color: var(--warn); }
+  .timer-box.danger { border-color: var(--danger); color: var(--danger); animation: pulse-red .8s infinite; }
+  @keyframes pulse-red { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .exam-topbar { gap: 8px; }
+    .stats-bar { gap: 12px; padding: 8px 14px; }
+    .stats-bar-sep { display: none; }
+    .legend-item { display: none; }
+    .grid-menu-wrap { padding: 14px; }
+    .area-grid { grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 6px; }
+    .drawer-panel { width: 100%; border-left: none; }
+    .results-grid { grid-template-columns: 1fr 1fr 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+
+  /* ── LOADING ── */
+  #screen-loading {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 16px;
+  }
+  .spinner {
+    width: 40px; height: 40px; border: 3px solid var(--border);
+    border-top-color: var(--accent); border-radius: 50%;
+    animation: spin .7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+
+<!-- ══════════════ SCREEN: LOGIN ══════════════ -->
+<div id="screen-login">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="icon">🩺</div>
+      <div>
+        <h1>EXCOBA DEMO EXAMEN DE SIMULACIÓN #1</h1>
+        <p>Enfoque a: Médico Cirujano y Partero</p>
+      </div>
+    </div>
+    <p class="login-subtitle">Ingresa tus datos para iniciar el simulacro de examen. Los campos marcados con * son obligatorios.</p>
+
+    <div class="form-group">
+      <label>Nombre completo <span class="req">*</span></label>
+      <input id="inp-nombre" type="text" placeholder="Escribe tu nombre completo">
+    </div>
+    <div class="form-group">
+      <label>Número de ficha <span class="req">*</span></label>
+      <input id="inp-ficha" type="text" placeholder="Ej. 2024001234">
+    </div>
+    <div class="form-group">
+      <label>Carrera <span class="req">*</span></label>
+      <select id="inp-carrera">
+        <option value="">— Selecciona tu carrera —</option>
+        <option value="Médico Cirujano y Partero" selected>Médico Cirujano y Partero</option>
+        <option value="Odontología">Odontología</option>
+        <option value="Enfermería">Enfermería</option>
+        <option value="Nutrición">Nutrición</option>
+        <option value="Psicología">Psicología</option>
+        <option value="Biología">Biología</option>
+        <option value="Químico Farmacobiólogo">Químico Farmacobiólogo</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Número de reactivos</label>
+      <select id="inp-numreac">
+        <option value="rapido">~45 reactivos (práctica rápida)</option>
+        <option value="corto">~90 reactivos (simulacro corto)</option>
+        <option value="completo" selected>180 reactivos (simulacro completo)</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary" onclick="startExam()">Iniciar simulacro →</button>
+
+    <div class="login-info">
+      <strong>ℹ️ Sobre este simulador:</strong> Este simulador replica la estructura y dinámica del EXCOBA, con 180 reactivos distribuidos en Tronco Común (Español, Matemáticas, Ciencias Naturales, Ciencias Sociales) y Especialidad (Física, Biología, Química). Las preguntas son originales y elaboradas con base en el temario oficial.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCREEN: LOADING ══════════════ -->
+<div id="screen-loading" class="hidden">
+  <div class="spinner"></div>
+  <p style="color:var(--text2); font-size:14px;">Generando banco de reactivos…</p>
+</div>
+
+<!-- ══════════════ SCREEN: EXAM (GRID MENU) ══════════════ -->
+<div id="screen-exam" class="hidden">
+
+  <!-- TOP BAR -->
+  <div class="exam-topbar">
+    <span class="topbar-logo">🩺 EXCOBA · Médico Cirujano</span>
+    <div style="flex:1; min-width:120px;">
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
+      </div>
+      <div style="font-size:11px; color:var(--text3); margin-top:3px;">
+        <span id="topbar-answered">0</span> / <span id="topbar-total">0</span> respondidas
+      </div>
+    </div>
+    <div class="timer-box" id="timer-box">⏱ <span id="timer-display">2:30:00</span></div>
+    <button class="btn btn-danger" style="font-size:12px; padding:7px 14px;" onclick="confirmFinish()">Finalizar</button>
+  </div>
+
+  <!-- STATS BAR -->
+  <div class="stats-bar">
+    <div class="stats-bar-item"><span class="sb-dot answered-dot"></span><span id="sb-answered">0</span> Respondidas</div>
+    <div class="stats-bar-item"><span class="sb-dot pending-dot"></span><span id="sb-unanswered">0</span> Sin responder</div>
+    <div class="stats-bar-item"><span class="sb-dot marked-dot"></span><span id="sb-marked">0</span> Marcadas</div>
+    <div class="stats-bar-sep"></div>
+    <div class="legend-item"><span class="leg-box leg-pending"></span> Sin responder</div>
+    <div class="legend-item"><span class="leg-box leg-answered"></span> Respondida</div>
+    <div class="legend-item"><span class="leg-box leg-marked"></span> Marcada</div>
+  </div>
+
+  <!-- GRID MENU -->
+  <div class="grid-menu-wrap">
+    <div id="grid-area-container"></div>
+  </div>
+</div>
+
+<!-- ══════════════ QUESTION DRAWER ══════════════ -->
+<div id="question-drawer" class="hidden">
+  <div class="drawer-backdrop" onclick="closeDrawer()"></div>
+  <div class="drawer-panel">
+    <div class="drawer-header">
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; flex:1;">
+        <span class="q-num" id="q-num">Reactivo 1</span>
+        <span class="q-area-tag" id="q-area">Área</span>
+        <span class="q-diff" id="q-diff">Nivel</span>
+        <span class="q-marked-badge hidden" id="q-marked-badge">📌 Marcada</span>
+      </div>
+      <button class="drawer-close" onclick="closeDrawer()">✕ Cerrar</button>
+    </div>
+    <div class="drawer-body">
+      <div class="q-text" id="q-text"></div>
+      <div class="options-grid" id="options-grid"></div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn btn-secondary" id="btn-prev" onclick="navigate(-1)">← Anterior</button>
+      <button class="btn btn-warn" onclick="toggleMark()" id="btn-mark">📌 Marcar</button>
+      <div style="flex:1"></div>
+      <button class="btn btn-primary" id="btn-next" onclick="navigate(1)">Siguiente →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCREEN: RESULTS ══════════════ -->
+<div id="screen-results" class="hidden"></div>
+
+<!-- ══════════════ MODAL: CONFIRM FINISH ══════════════ -->
+<div id="modal-finish" class="modal-overlay hidden">
+  <div class="modal-box">
+    <h2>¿Finalizar examen?</h2>
+    <p id="modal-finish-msg">Aún tienes preguntas sin responder. ¿Estás seguro/a de que deseas terminar el simulacro?</p>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeModal('modal-finish')">Continuar examen</button>
+      <button class="btn btn-danger" onclick="finishExam()">Sí, finalizar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// BANCO DE REACTIVOS — EXCOBA MÉDICO CIRUJANO Y PARTERO
+// Estructura oficial: Sección 1 (40) · Sección 2 (80) · Sección 3 (60)
+// Cada pregunta: sec=sección, a=área, s=subtema, d=dificultad
+// ══════════════════════════════════════════════════════════════════════
+
+// ─── SECCIÓN 1: EDUCACIÓN PRIMARIA (40 reactivos) ───────────────────
+// Español Primaria: 20 | Matemáticas Primaria: 20
+
+const SEC1_ESPANOL = [
+{sec:1,a:"Español",s:"Recuento histórico",d:"basico",
+t:"Lee el siguiente fragmento:\n\n«Hernán Cortés llegó a las costas de México en 1519. En 1521 conquistó Tenochtitlán y en 1535 se estableció el Virreinato de la Nueva España.»\n\n¿En cuál de las siguientes opciones los hechos están en orden cronológico correcto?",
+o:["Conquista de Tenochtitlán → llegada de Cortés → Virreinato","Llegada de Cortés → conquista de Tenochtitlán → Virreinato","Virreinato → llegada de Cortés → conquista de Tenochtitlán","Llegada de Cortés → Virreinato → conquista de Tenochtitlán"],c:1},
+
+{sec:1,a:"Español",s:"Recuento histórico",d:"basico",
+t:"Lee el texto:\n\n«La vacuna fue descubierta por Edward Jenner en 1796. Décadas después, Louis Pasteur desarrolló la teoría microbiana. Finalmente, en el siglo XX se erradicó la viruela.»\n\n¿Cuál fecha puedes inferir como más antigua en el relato?",
+o:["Erradicación de la viruela","Teoría microbiana de Pasteur","Descubrimiento de la vacuna por Jenner","Las tres ocurrieron al mismo tiempo"],c:2},
+
+{sec:1,a:"Español",s:"Reportaje",d:"basico",
+t:"¿Cuál de las siguientes características pertenece al reportaje como tipo de texto?",
+o:["Narra hechos ficticios con personajes inventados","Presenta información verificada sobre un hecho real con apoyo de fuentes","Expresa exclusivamente la opinión personal del autor","Instruye al lector sobre cómo realizar una actividad"],c:1},
+
+{sec:1,a:"Español",s:"Reportaje",d:"basico",
+t:"¿Cuál es la principal diferencia entre una noticia y un reportaje?",
+o:["La noticia es más larga que el reportaje","El reportaje profundiza y contextualiza el tema; la noticia solo informa el hecho","La noticia incluye opiniones personales del periodista","No existe ninguna diferencia entre ambos"],c:1},
+
+{sec:1,a:"Español",s:"Textos científicos y populares",d:"basico",
+t:"¿Cuál de los siguientes textos es un ejemplo de texto científico?",
+o:["Una receta de cocina publicada en una revista","Un artículo en una revista médica sobre el tratamiento de la diabetes","Un cuento sobre un médico que cura enfermedades","Un anuncio de vitaminas en televisión"],c:1},
+
+{sec:1,a:"Español",s:"Textos científicos y populares",d:"basico",
+t:"¿Cuál es la característica principal de un texto de divulgación científica popular?",
+o:["Usa lenguaje técnico incomprensible para el público general","Traduce conceptos científicos a un lenguaje accesible para el público en general","Está dirigido exclusivamente a especialistas","No requiere fuentes ni respaldo científico"],c:1},
+
+{sec:1,a:"Español",s:"Ortografía y puntuación",d:"basico",
+t:"¿Cuál de las siguientes palabras se escribe con «v»?",
+o:["Había","Estubo","Estuvo","Estabon"],c:2},
+
+{sec:1,a:"Español",s:"Ortografía y puntuación",d:"basico",
+t:"¿En cuál de estas oraciones se usan correctamente los signos de puntuación?",
+o:["El médico dijo: «El paciente debe descansar».","El médico dijo «El paciente debe descansar»","El médico dijo, el paciente debe descansar.","El médico dijo el paciente; debe descansar."],c:0},
+
+{sec:1,a:"Español",s:"Ortografía y puntuación",d:"basico",
+t:"¿Cuál de las siguientes palabras lleva tilde por ser esdrújula?",
+o:["Cancion","Lapiz","Médico","Reloj"],c:2},
+
+{sec:1,a:"Español",s:"Ortografía y puntuación",d:"basico",
+t:"Elige la opción escrita correctamente con el uso de «c», «s» o «z»:",
+o:["Corazon","Corazón","Corasón","Coraçon"],c:1},
+
+{sec:1,a:"Español",s:"Sintaxis",d:"basico",
+t:"¿Cuál es el sujeto en la siguiente oración?\n\n«Los glóbulos blancos defienden al organismo de las infecciones.»",
+o:["defienden al organismo","al organismo","Los glóbulos blancos","de las infecciones"],c:2},
+
+{sec:1,a:"Español",s:"Sintaxis",d:"basico",
+t:"¿Cuál es el predicado en la oración?\n\n«La doctora revisó al paciente con cuidado.»",
+o:["La doctora","revisó al paciente con cuidado","al paciente con cuidado","La doctora revisó"],c:1},
+
+{sec:1,a:"Español",s:"Léxico",d:"basico",
+t:"¿Cuál es el significado de la palabra «crónico» en el contexto médico?",
+o:["Que aparece de forma repentina y con gran intensidad","Que dura poco tiempo","Que persiste por un largo período de tiempo","Que no tiene tratamiento"],c:2},
+
+{sec:1,a:"Español",s:"Léxico",d:"basico",
+t:"¿Cuál es el sinónimo de «enunciado» según el contexto gramatical?",
+o:["Párrafo","Oración","Texto","Silaba"],c:1},
+
+{sec:1,a:"Español",s:"Cuento",d:"basico",
+t:"¿Cuáles son las partes clásicas de un cuento?",
+o:["Introducción, nudo y desenlace","Título, autor y editorial","Presentación, argumentación y conclusión","Premisa, tesis y antítesis"],c:0},
+
+{sec:1,a:"Español",s:"Cuento",d:"basico",
+t:"En el siguiente fragmento: «Sus manos eran de hielo cuando tocó la frente del niño», ¿qué figura retórica se utiliza?",
+o:["Hipérbole","Símil","Metáfora","Reiteración"],c:2},
+
+{sec:1,a:"Español",s:"Textos instructivos",d:"basico",
+t:"¿Cuál es la característica principal de un texto instructivo?",
+o:["Narra una historia con inicio, desarrollo y final","Argumenta una postura personal","Indica los pasos a seguir para realizar una acción","Describe las características de un objeto"],c:2},
+
+{sec:1,a:"Español",s:"Cuestionarios",d:"basico",
+t:"¿Qué tipo de pregunta en un cuestionario requiere que el encuestado escriba su propia respuesta?",
+o:["Pregunta cerrada","Pregunta de opción múltiple","Pregunta abierta","Pregunta de escala"],c:2},
+
+{sec:1,a:"Español",s:"Categorías de información",d:"basico",
+t:"¿Qué significa «jerarquizar» información en un texto?",
+o:["Ordenarla alfabéticamente","Organizarla de lo más a lo menos importante","Eliminar la información repetida","Traducirla a otro idioma"],c:1},
+
+{sec:1,a:"Español",s:"Recuento histórico",d:"basico",
+t:"Al leer: «Primero se lavó las manos, luego examinó al paciente y finalmente le recetó el medicamento.» ¿Qué conectores temporales aparecen en el texto?",
+o:["Primero, luego, finalmente","Se lavó, examinó, recetó","Manos, paciente, medicamento","Lavó, luego, medicamento"],c:0},
+];
+
+const SEC1_MATEMATICAS = [
+{sec:1,a:"Matemáticas",s:"Números naturales",d:"basico",
+t:"Un médico atiende 6 pacientes por hora. ¿Cuántos pacientes atenderá en una jornada de 8 horas?",
+o:["42","48","54","36"],c:1},
+
+{sec:1,a:"Matemáticas",s:"Números naturales",d:"basico",
+t:"¿Cuánto es 345 × 12?",
+o:["4 040","4 140","4 240","3 940"],c:1},
+
+{sec:1,a:"Matemáticas",s:"Números fraccionarios",d:"basico",
+t:"¿Cuánto es 3/4 + 1/2?",
+o:["4/6","5/4","1/4","3/8"],c:1},
+
+{sec:1,a:"Matemáticas",s:"Números fraccionarios",d:"basico",
+t:"Si una dosis de medicamento es 2/3 de tableta, ¿cuántas tabletas se necesitan para 9 dosis?",
+o:["4","5","6","7"],c:2},
+
+{sec:1,a:"Matemáticas",s:"Números decimales",d:"basico",
+t:"¿Cuánto es 3.75 + 2.50?",
+o:["5.25","6.25","6.00","5.75"],c:1},
+
+{sec:1,a:"Matemáticas",s:"Números decimales",d:"basico",
+t:"Un frasco contiene 250 mL. Si se administran 37.5 mL cada 8 horas, ¿cuántas dosis completas hay en el frasco?",
+o:["5","6","7","8"],c:1},
+
+{sec:1,a:"Matemáticas",s:"Figuras planas",d:"basico",
+t:"¿Cuál es el área de un rectángulo de 12 cm de largo y 5 cm de ancho?",
+o:["34 cm²","60 cm²","17 cm²","70 cm²"],c:1},
+
+{sec:1,a:"Matemáticas",s:"Figuras planas",d:"basico",
+t:"¿Cuál es el perímetro de un cuadrado cuyo lado mide 9 cm?",
+o:["18 cm","36 cm","27 cm","81 cm"],c:1},
+
+{sec:1,a:"Matemáticas",s:"Figuras planas",d:"basico",
+t:"¿Cuál es el área de un triángulo con base de 10 cm y altura de 6 cm?",
+o:["60 cm²","30 cm²","16 cm²","120 cm²"],c:1},
+
+{sec:1,a:"Matemáticas",s:"Figuras planas",d:"basico",
+t:"¿Cuál es el área de un círculo con radio de 5 cm? (π ≈ 3.14)",
+o:["15.70 cm²","78.50 cm²","31.40 cm²","25 cm²"],c:1},
+
+{sec:1,a:"Matemáticas",s:"Cuerpos geométricos",d:"basico",
+t:"¿Cuántas caras tiene un cubo?",
+o:["4","6","8","12"],c:1},
+
+{sec:1,a:"Matemáticas",s:"Cuerpos geométricos",d:"basico",
+t:"¿Cuál es el volumen de un cubo cuya arista mide 4 cm?",
+o:["16 cm³","48 cm³","64 cm³","12 cm³"],c:2},
+
+{sec:1,a:"Matemáticas",s:"Magnitudes",d:"basico",
+t:"¿Cuántos mililitros hay en 2.5 litros?",
+o:["250 mL","25 mL","2500 mL","2050 mL"],c:2},
+
+{sec:1,a:"Matemáticas",s:"Magnitudes",d:"basico",
+t:"Una enfermera pesa a un niño: 23 kg 400 g. ¿Cuántos gramos pesa en total?",
+o:["2340 g","234 g","23400 g","23 400 g"],c:3},
+
+{sec:1,a:"Matemáticas",s:"Relaciones de proporcionalidad",d:"basico",
+t:"Si un medicamento cuesta $45 y se compran 6 frascos, ¿cuánto se paga en total?",
+o:["$250","$270","$290","$260"],c:1},
+
+{sec:1,a:"Matemáticas",s:"Relaciones de proporcionalidad",d:"basico",
+t:"En un mapa, 1 cm representa 50 km. Si dos ciudades distan 3.5 cm en el mapa, ¿cuál es la distancia real?",
+o:["100 km","150 km","175 km","200 km"],c:2},
+
+{sec:1,a:"Matemáticas",s:"Nociones de probabilidad",d:"basico",
+t:"En una bolsa hay 4 canicas rojas, 3 azules y 3 verdes. ¿Cuál es la probabilidad de sacar una canica azul?",
+o:["3/10","4/10","3/7","1/3"],c:0},
+
+{sec:1,a:"Matemáticas",s:"Nociones de estadística",d:"basico",
+t:"Las temperaturas registradas durante 5 días fueron: 36, 37, 38, 36, 38 °C. ¿Cuál es la temperatura que más se repite (moda)?",
+o:["37 °C","36 y 38 °C (bimodal)","38 °C","36 °C"],c:1},
+
+{sec:1,a:"Matemáticas",s:"Nociones de estadística",d:"basico",
+t:"¿Cómo se interpreta una gráfica de barras en la que la barra de «hipertensión» es la más alta?",
+o:["La hipertensión tiene el valor mínimo","La hipertensión es la enfermedad con menor frecuencia","La hipertensión es la enfermedad más frecuente en el grupo analizado","Todas las enfermedades tienen la misma frecuencia"],c:2},
+
+{sec:1,a:"Matemáticas",s:"Números fraccionarios",d:"basico",
+t:"¿Cuánto es 5/6 − 1/3?",
+o:["4/3","1/2","4/6","2/6"],c:1},
+];
+
+// ─── SECCIÓN 2: EDUCACIÓN SECUNDARIA (80 reactivos) ─────────────────
+// Español: 20 | Matemáticas: 20 | Ciencias Naturales: 20 | Ciencias Sociales: 20
+
+const SEC2_ESPANOL = [
+{sec:2,a:"Español",s:"Medios de comunicación",d:"intermedio",
+t:"Lee el titular: «Nuevo fármaco reduce en 40% los casos de infarto según estudio de la UNAM».\n\n¿Cuál de los siguientes elementos del titular permite identificar la fuente de información?",
+o:["«Nuevo fármaco»","«reduce en 40%»","«según estudio de la UNAM»","«casos de infarto»"],c:2},
+
+{sec:2,a:"Español",s:"Medios de comunicación",d:"intermedio",
+t:"¿Cuál de las siguientes afirmaciones representa una opinión y no un hecho verificable?",
+o:["La OMS declaró emergencia sanitaria en 2020","El virus SARS-CoV-2 se detectó por primera vez en Wuhan","Las vacunas son la mejor decisión que puede tomar cualquier persona","La COVID-19 afectó a millones de personas en el mundo"],c:2},
+
+{sec:2,a:"Español",s:"Textos informativos",d:"intermedio",
+t:"¿Cuál es la función de la oración temática en un párrafo?",
+o:["Cerrar el párrafo con una conclusión","Presentar la idea principal que se desarrollará en el párrafo","Añadir información secundaria de apoyo","Conectar el párrafo con el siguiente"],c:1},
+
+{sec:2,a:"Español",s:"Textos informativos",d:"intermedio",
+t:"¿Qué recurso gráfico es más adecuado para mostrar la evolución de contagios de una enfermedad a lo largo del tiempo?",
+o:["Cuadro sinóptico","Gráfica de líneas","Diagrama de Venn","Mapa conceptual"],c:1},
+
+{sec:2,a:"Español",s:"Textos informativos",d:"intermedio",
+t:"¿Qué expresión jerarquiza correctamente la información en un texto expositivo?",
+o:["«Sin embargo, aunque, pero»","«En primer lugar... además... finalmente»","«O sea, es decir, o»","«porque, ya que, puesto que»"],c:1},
+
+{sec:2,a:"Español",s:"Entrevista",d:"intermedio",
+t:"Lee la siguiente oración en discurso directo:\n\n«El especialista afirmó: 'La dieta mediterránea reduce el riesgo cardiovascular.'»\n\n¿Cómo se transforma al discurso indirecto?",
+o:["El especialista afirmó que la dieta mediterránea reduce el riesgo cardiovascular.","El especialista: 'La dieta mediterránea reduce el riesgo cardiovascular.'","El especialista dijo: La dieta mediterránea.","La dieta mediterránea según el especialista reduce."],c:0},
+
+{sec:2,a:"Español",s:"Entrevista",d:"intermedio",
+t:"¿Cuál es el propósito principal del reporte de una entrevista?",
+o:["Inventar las declaraciones del entrevistado","Dar a conocer la opinión o conocimiento de un experto sobre un tema","Narrar una historia ficticia sobre el entrevistado","Persuadir al lector de adoptar una postura política"],c:1},
+
+{sec:2,a:"Español",s:"Textos descriptivos",d:"intermedio",
+t:"¿Cuál de las siguientes oraciones usa correctamente la voz pasiva?",
+o:["El médico administró el medicamento.","El medicamento fue administrado por el médico.","Administró el medicamento el médico.","El medicamento, el médico lo administró."],c:1},
+
+{sec:2,a:"Español",s:"Textos descriptivos",d:"intermedio",
+t:"¿Cuál de los siguientes recursos asegura la cohesión en un texto?",
+o:["Cambiar constantemente el tema del párrafo","Usar sinónimos y pronombres para no repetir la misma palabra","Incluir imágenes en cada oración","Usar mayúsculas para marcar ideas importantes"],c:1},
+
+{sec:2,a:"Español",s:"Textos literarios",d:"intermedio",
+t:"¿Qué género literario se caracteriza por la representación de acciones a través del diálogo y la actuación?",
+o:["Lírica","Narrativa","Dramática (teatro)","Ensayo"],c:2},
+
+{sec:2,a:"Español",s:"Textos literarios",d:"intermedio",
+t:"Lee el siguiente fragmento poético: «Tus ojos son dos luceros que iluminan mi sendero.»\n\n¿Qué figura retórica se utiliza?",
+o:["Hipérbole","Comparación (símil)","Metáfora","Aliteración"],c:2},
+
+{sec:2,a:"Español",s:"Documentos administrativos",d:"intermedio",
+t:"¿Cuál es el propósito de una carta de solicitud formal?",
+o:["Narrar hechos históricos","Pedir un servicio, beneficio o respuesta a una autoridad o institución","Describir las características de un producto","Informar sobre un evento deportivo"],c:1},
+
+{sec:2,a:"Español",s:"Gramática",d:"intermedio",
+t:"Identifica el nexo que introduce una subordinada causal:\n\n«El paciente mejoró ____ tomó los antibióticos correctamente.»",
+o:["aunque","sino","porque","sin embargo"],c:2},
+
+{sec:2,a:"Español",s:"Gramática",d:"intermedio",
+t:"¿Cuál es la función del complemento circunstancial de modo en la oración:\n\n«El cirujano operó con gran precisión»?",
+o:["Indica a quién se dirige la acción","Señala la causa de la acción","Indica la manera en que se realiza la acción","Indica el tiempo en que ocurre"],c:2},
+
+{sec:2,a:"Español",s:"Gramática",d:"intermedio",
+t:"¿Cuál es el conector adversativo en la siguiente oración?\n\n«El tratamiento era costoso, pero el paciente lo siguió.»",
+o:["era","siguió","pero","costoso"],c:2},
+
+{sec:2,a:"Español",s:"Medios de comunicación",d:"intermedio",
+t:"¿Cuál de los siguientes elementos NO forma parte de la estructura de una noticia periodística?",
+o:["Titular","Lead o entrada","Cuerpo de la noticia","Tesis y antítesis"],c:3},
+
+{sec:2,a:"Español",s:"Textos informativos",d:"intermedio",
+t:"¿Cuál es la diferencia entre un texto formal y uno informal?",
+o:["El texto formal usa palabras coloquiales; el informal usa tecnicismos","El texto formal sigue normas lingüísticas y tiene un registro serio; el informal es más espontáneo","No existe diferencia entre ambos","El texto informal siempre es más largo que el formal"],c:1},
+
+{sec:2,a:"Español",s:"Entrevista",d:"intermedio",
+t:"¿Qué tipo de nexo conecta correctamente estas dos ideas?\n\n«Primero se anestesió al paciente, ______ se realizó la incisión.»",
+o:["sin embargo","aunque","luego","porque"],c:2},
+
+{sec:2,a:"Español",s:"Textos literarios",d:"intermedio",
+t:"¿Cuál es la función de un prólogo en una obra literaria?",
+o:["Presentar el clímax de la historia","Introducir al lector al contexto, propósito o tema de la obra","Narrar el desenlace de la historia","Listar los personajes y sus características"],c:1},
+
+{sec:2,a:"Español",s:"Gramática",d:"intermedio",
+t:"¿Cuál de las siguientes oraciones tiene un error de concordancia?",
+o:["Los médicos revisaron a los pacientes","La enfermera preparó los medicamentos","Los resultados del examen fue positivos","El diagnóstico fue confirmado"],c:2},
+];
+
+const SEC2_MATEMATICAS = [
+{sec:2,a:"Matemáticas",s:"Números reales",d:"intermedio",
+t:"¿Cuánto es (−4)² + √16 − 3?",
+o:["17","15","13","11"],c:0},
+
+{sec:2,a:"Matemáticas",s:"Álgebra",d:"intermedio",
+t:"Resuelve: 5x − 3 = 2x + 9",
+o:["x = 2","x = 3","x = 4","x = 6"],c:2},
+
+{sec:2,a:"Matemáticas",s:"Álgebra",d:"intermedio",
+t:"Simplifica: (x² − 9) ÷ (x − 3)",
+o:["x − 3","x + 3","x² + 3","x/3"],c:1},
+
+{sec:2,a:"Matemáticas",s:"Álgebra",d:"intermedio",
+t:"¿Cuál es el resultado de (2x + 3)(x − 4)?",
+o:["2x² − 5x − 12","2x² + 5x − 12","2x² − 8x + 3","2x² − 5x + 12"],c:0},
+
+{sec:2,a:"Matemáticas",s:"Sucesiones aritméticas",d:"intermedio",
+t:"¿Cuál es el término que sigue en la sucesión: 4, 7, 10, 13, __?",
+o:["14","15","16","17"],c:2},
+
+{sec:2,a:"Matemáticas",s:"Ecuaciones cuadráticas",d:"intermedio",
+t:"Resuelve: x² − 5x + 6 = 0",
+o:["x = 1 y x = 6","x = 2 y x = 3","x = −2 y x = −3","x = 3 y x = 4"],c:1},
+
+{sec:2,a:"Matemáticas",s:"Sistemas de ecuaciones",d:"intermedio",
+t:"Resuelve el sistema:\n3x + y = 10\nx − y = 2",
+o:["x = 2, y = 4","x = 3, y = 1","x = 4, y = 2","x = 1, y = 7"],c:1},
+
+{sec:2,a:"Matemáticas",s:"Funciones lineales",d:"intermedio",
+t:"¿Cuál es la pendiente de la recta que pasa por los puntos (1, 2) y (3, 8)?",
+o:["2","3","4","5"],c:1},
+
+{sec:2,a:"Matemáticas",s:"Funciones lineales",d:"intermedio",
+t:"¿Cuál es la ecuación de la recta con pendiente 2 que pasa por el punto (0, −3)?",
+o:["y = 2x + 3","y = 2x − 3","y = −2x + 3","y = 3x − 2"],c:1},
+
+{sec:2,a:"Matemáticas",s:"Geometría",d:"intermedio",
+t:"En un triángulo rectángulo, los catetos miden 9 cm y 12 cm. ¿Cuánto mide la hipotenusa?",
+o:["13 cm","14 cm","15 cm","16 cm"],c:2},
+
+{sec:2,a:"Matemáticas",s:"Geometría",d:"intermedio",
+t:"¿Cuántos grados mide cada ángulo interior de un triángulo equilátero?",
+o:["45°","60°","90°","120°"],c:1},
+
+{sec:2,a:"Matemáticas",s:"Semejanza",d:"intermedio",
+t:"Dos triángulos son semejantes. Los lados del primero miden 3, 4 y 5 cm. Si el lado mayor del segundo mide 10 cm, ¿cuánto mide su lado menor?",
+o:["4 cm","6 cm","8 cm","9 cm"],c:1},
+
+{sec:2,a:"Matemáticas",s:"Trigonometría",d:"intermedio",
+t:"En un triángulo rectángulo, el ángulo θ tiene sen(θ) = 3/5. Si la hipotenusa mide 15 cm, ¿cuánto mide el cateto opuesto?",
+o:["5 cm","7 cm","9 cm","12 cm"],c:2},
+
+{sec:2,a:"Matemáticas",s:"Estadística",d:"intermedio",
+t:"Los datos 5, 8, 6, 7, 9, 8, 6, 8 representan calificaciones. ¿Cuál es la media aritmética?",
+o:["7","7.125","7.5","8"],c:1},
+
+{sec:2,a:"Matemáticas",s:"Estadística",d:"intermedio",
+t:"Los datos ordenados son: 2, 4, 6, 8, 10. ¿Cuál es la mediana?",
+o:["4","5","6","7"],c:2},
+
+{sec:2,a:"Matemáticas",s:"Estadística",d:"intermedio",
+t:"¿Qué mide la desviación estándar en un conjunto de datos?",
+o:["El valor central del conjunto","El valor que más se repite","La dispersión de los datos respecto a la media","La diferencia entre el máximo y el mínimo"],c:2},
+
+{sec:2,a:"Matemáticas",s:"Proporcionalidad inversa",d:"intermedio",
+t:"Si 6 enfermeras tardan 4 horas en atender una sala, ¿cuántas horas tardarán 8 enfermeras?",
+o:["2 h","3 h","4 h","5 h"],c:1},
+
+{sec:2,a:"Matemáticas",s:"Diagramas y gráficas",d:"intermedio",
+t:"En una gráfica circular, el sector «Enfermedades respiratorias» ocupa 90°. ¿Qué porcentaje del total representa?",
+o:["15%","20%","25%","30%"],c:2},
+
+{sec:2,a:"Matemáticas",s:"Álgebra",d:"intermedio",
+t:"¿Cuál es el valor de 3x² cuando x = −2?",
+o:["−12","−6","6","12"],c:3},
+
+{sec:2,a:"Matemáticas",s:"Funciones cuadráticas",d:"intermedio",
+t:"¿En qué punto la parábola f(x) = x² − 6x + 5 corta al eje x?",
+o:["x = 1 y x = 5","x = −1 y x = −5","x = 2 y x = 3","x = 0 y x = 6"],c:0},
+];
+
+const SEC2_CIENCIAS = [
+// Biología
+{sec:2,a:"Ciencias Naturales",s:"Biología - Biodiversidad",d:"intermedio",
+t:"¿Cuál de los siguientes es un mecanismo de adaptación que permite a los organismos sobrevivir en ambientes extremos?",
+o:["La selección artificial por el ser humano","La regulación de temperatura mediante el pelaje o la grasa corporal","La reproducción por clonación","La alimentación exclusiva con un tipo de nutriente"],c:1},
+
+{sec:2,a:"Ciencias Naturales",s:"Biología - Nutrición",d:"intermedio",
+t:"¿Cuál es la diferencia entre organismos autótrofos y heterótrofos?",
+o:["Los autótrofos se alimentan de otros organismos; los heterótrofos producen su propio alimento","Los autótrofos producen su propio alimento; los heterótrofos dependen de otros organismos para obtenerlo","Ambos producen su propio alimento pero de diferente manera","Ambos dependen de otros organismos para alimentarse"],c:1},
+
+{sec:2,a:"Ciencias Naturales",s:"Biología - Nutrición",d:"intermedio",
+t:"¿Cuál es el nutriente principal que proporciona energía inmediata al organismo?",
+o:["Proteínas","Lípidos","Carbohidratos","Vitaminas"],c:2},
+
+{sec:2,a:"Ciencias Naturales",s:"Biología - Respiración",d:"intermedio",
+t:"¿En qué estructura pulmonar ocurre el intercambio de oxígeno y dióxido de carbono entre el aire y la sangre?",
+o:["Bronquios","Tráquea","Alvéolos","Laringe"],c:2},
+
+{sec:2,a:"Ciencias Naturales",s:"Biología - Reproducción",d:"intermedio",
+t:"¿Cuál de las siguientes enfermedades de transmisión sexual tiene como agente causal un virus?",
+o:["Sífilis","Gonorrea","VIH/SIDA","Clamidia"],c:2},
+
+{sec:2,a:"Ciencias Naturales",s:"Biología - Reproducción",d:"intermedio",
+t:"¿Cuál es la diferencia principal entre mitosis y meiosis?",
+o:["La mitosis produce 4 células haploides; la meiosis produce 2 células diploides","La mitosis produce 2 células diploides genéticamente iguales; la meiosis produce 4 células haploides","Ambas producen el mismo número y tipo de células","La mitosis ocurre solo en células sexuales"],c:1},
+
+{sec:2,a:"Ciencias Naturales",s:"Biología - Genética",d:"intermedio",
+t:"¿Cuál de los siguientes pares corresponde correctamente a concepto y definición?",
+o:["Genotipo: rasgos físicos observables del organismo","Fenotipo: composición genética o alélica de un organismo","Cromosoma: estructura que contiene la información genética del núcleo celular","Gen: característica física visible como el color de ojos"],c:2},
+
+// Física
+{sec:2,a:"Ciencias Naturales",s:"Física - Movimiento",d:"intermedio",
+t:"Un cuerpo recorre 120 m en 8 s con velocidad constante. ¿Cuál es su velocidad?",
+o:["10 m/s","12 m/s","15 m/s","20 m/s"],c:2},
+
+{sec:2,a:"Ciencias Naturales",s:"Física - Movimiento",d:"intermedio",
+t:"¿Cuál es la aceleración de un automóvil que pasa de 20 m/s a 50 m/s en 10 segundos?",
+o:["2 m/s²","3 m/s²","4 m/s²","5 m/s²"],c:1},
+
+{sec:2,a:"Ciencias Naturales",s:"Física - Fuerzas",d:"intermedio",
+t:"Según la Tercera Ley de Newton (acción y reacción), cuando un médico empuja una camilla:",
+o:["Solo la camilla recibe fuerza","La camilla también ejerce una fuerza igual y opuesta sobre el médico","No hay ninguna fuerza de reacción","La fuerza de reacción es mayor que la acción"],c:1},
+
+{sec:2,a:"Ciencias Naturales",s:"Física - Energía",d:"intermedio",
+t:"¿Cuál es la energía cinética de un objeto de 2 kg que se mueve a 6 m/s?",
+o:["12 J","24 J","36 J","48 J"],c:2},
+
+{sec:2,a:"Ciencias Naturales",s:"Física - Interacciones de la materia",d:"intermedio",
+t:"Un gas en un recipiente cerrado a 300 K tiene una presión de 2 atm. Si la temperatura sube a 600 K sin cambiar el volumen, ¿cuál será la nueva presión?",
+o:["1 atm","2 atm","4 atm","6 atm"],c:2},
+
+{sec:2,a:"Ciencias Naturales",s:"Física - Electromagnetismo",d:"intermedio",
+t:"¿Cuál de las siguientes es una aplicación tecnológica de la electricidad en el área médica?",
+o:["Estetoscopio","Electrocardiograma (ECG)","Tensiómetro manual","Termómetro de mercurio"],c:1},
+
+// Química
+{sec:2,a:"Ciencias Naturales",s:"Química - Propiedades de la materia",d:"intermedio",
+t:"¿Cuál de las siguientes es una propiedad intensiva de la materia?",
+o:["Masa","Volumen","Densidad","Peso"],c:2},
+
+{sec:2,a:"Ciencias Naturales",s:"Química - Clasificación de sustancias",d:"intermedio",
+t:"¿Cuál de las siguientes es una mezcla homogénea?",
+o:["Ensalada de verduras","Agua con arena","Suero fisiológico (agua con sal)","Agua con aceite"],c:2},
+
+{sec:2,a:"Ciencias Naturales",s:"Química - Tabla periódica",d:"intermedio",
+t:"¿Cuál es el número atómico del oxígeno?",
+o:["6","7","8","9"],c:2},
+
+{sec:2,a:"Ciencias Naturales",s:"Química - Tabla periódica",d:"intermedio",
+t:"¿En qué grupo de la tabla periódica se encuentran los metales alcalinos?",
+o:["Grupo 1","Grupo 2","Grupo 17","Grupo 18"],c:0},
+
+{sec:2,a:"Ciencias Naturales",s:"Química - Reacción química",d:"intermedio",
+t:"¿Qué ley afirma que la masa total de los reactivos es igual a la masa total de los productos en una reacción química?",
+o:["Ley de proporciones definidas","Ley de conservación de la masa","Ley de gases ideales","Ley de Avogadro"],c:1},
+
+{sec:2,a:"Ciencias Naturales",s:"Química - Ácidos y bases",d:"intermedio",
+t:"¿Qué sustancia produce una solución básica (alcalina) al disolverse en agua?",
+o:["HCl","H₂SO₄","NaOH","CH₃COOH"],c:2},
+
+{sec:2,a:"Ciencias Naturales",s:"Química - Reacción química",d:"intermedio",
+t:"Al balancear: Fe + O₂ → Fe₂O₃, los coeficientes correctos son:",
+o:["4, 3, 2","2, 3, 1","3, 4, 2","2, 1, 3"],c:0},
+];
+
+const SEC2_SOCIALES = [
+{sec:2,a:"Ciencias Sociales",s:"Geografía - Espacio geográfico",d:"intermedio",
+t:"¿Cuál de los siguientes elementos se utiliza para localizar un punto exacto en un mapa mediante coordenadas geográficas?",
+o:["Simbología y escala","Latitud y longitud","Norte magnético y altitud","Rosa de los vientos y proyección"],c:1},
+
+{sec:2,a:"Ciencias Sociales",s:"Geografía - Recursos naturales",d:"intermedio",
+t:"¿Qué se entiende por desarrollo sustentable?",
+o:["Explotar los recursos naturales al máximo para el progreso económico","Satisfacer las necesidades presentes sin comprometer la capacidad de las generaciones futuras","Prohibir el uso de recursos naturales","Usar únicamente energías renovables en la industria"],c:1},
+
+{sec:2,a:"Ciencias Sociales",s:"Geografía - Dinámica de la población",d:"intermedio",
+t:"¿Cuál indicador demográfico expresa el número de nacimientos por cada 1000 habitantes en un año?",
+o:["Tasa de mortalidad","Tasa de natalidad","Tasa de crecimiento natural","Tasa de migración"],c:1},
+
+{sec:2,a:"Ciencias Sociales",s:"Geografía - Desigualdad social",d:"intermedio",
+t:"¿Qué mide el Índice de Desarrollo Humano (IDH)?",
+o:["Solo el Producto Interno Bruto de un país","La producción industrial de un país","El nivel de vida considerando educación, salud e ingresos","El número de habitantes de un país"],c:2},
+
+{sec:2,a:"Ciencias Sociales",s:"Geografía - Espacios culturales",d:"intermedio",
+t:"¿Cuál de las siguientes afirmaciones describe correctamente la diversidad cultural de México?",
+o:["México es un país monolingüe donde solo se habla español","En México conviven decenas de lenguas indígenas además del español","México solo tiene una etnia dominante","La diversidad cultural mexicana desapareció con la Colonia"],c:1},
+
+{sec:2,a:"Ciencias Sociales",s:"Historia - Siglo XVI-XVIII",d:"intermedio",
+t:"¿Cuál fue el principal impacto del colonialismo europeo en América durante los siglos XVI y XVII?",
+o:["El enriquecimiento económico equitativo entre Europa y América","La explotación de recursos y poblaciones nativas, y la implantación de un sistema colonial","El desarrollo científico independiente en América","La preservación total de las culturas indígenas"],c:1},
+
+{sec:2,a:"Ciencias Sociales",s:"Historia - Revoluciones atlánticas",d:"intermedio",
+t:"¿Cuál fue el principal aporte político de la Revolución Francesa (1789) al pensamiento universal?",
+o:["El establecimiento de una monarquía constitucional en toda Europa","La difusión de los ideales de libertad, igualdad y fraternidad","La conquista militar de América","La creación del sistema capitalista industrial"],c:1},
+
+{sec:2,a:"Ciencias Sociales",s:"Historia - Primera Guerra Mundial",d:"intermedio",
+t:"¿Cuál fue el detonante inmediato de la Primera Guerra Mundial (1914)?",
+o:["La invasión de Polonia por Alemania","El asesinato del archiduque Francisco Fernando de Austria en Sarajevo","La Revolución Rusa de 1917","El bombardeo de Pearl Harbor"],c:1},
+
+{sec:2,a:"Ciencias Sociales",s:"Historia - Culturas prehispánicas",d:"intermedio",
+t:"¿Qué cultura prehispánica construyó la ciudad de Teotihuacán y sus grandes pirámides?",
+o:["Mexica (Azteca)","Maya","Teotihuacana","Olmeca"],c:2},
+
+{sec:2,a:"Ciencias Sociales",s:"Historia - Independencia de México",d:"intermedio",
+t:"¿En qué año se consumó la Independencia de México con la entrada del Ejército Trigarante?",
+o:["1810","1813","1821","1836"],c:2},
+
+{sec:2,a:"Ciencias Sociales",s:"Historia - Revolución mexicana",d:"intermedio",
+t:"¿Cuál fue la principal causa que originó la Revolución Mexicana de 1910?",
+o:["El deseo de México de convertirse en república federal","El descontento por el prolongado régimen de Porfirio Díaz y la desigualdad social y económica","La invasión extranjera de Estados Unidos","La guerra religiosa entre conservadores y liberales"],c:1},
+
+{sec:2,a:"Ciencias Sociales",s:"Formación Cívica - Adolescentes",d:"intermedio",
+t:"¿Cuál de los siguientes factores FAVORECE la calidad de vida de los adolescentes según la Formación Cívica y Ética?",
+o:["El acceso ilimitado a redes sociales sin supervisión","El consumo de sustancias como forma de socialización","El acceso a educación, salud, familia y espacios seguros de convivencia","La competencia académica sin límites desde temprana edad"],c:2},
+
+{sec:2,a:"Ciencias Sociales",s:"Formación Cívica - Democracia",d:"intermedio",
+t:"¿Cuál es el principio fundamental de la soberanía popular en una democracia?",
+o:["El poder reside en el ejército y las fuerzas armadas","El poder emana del pueblo y se ejerce a través de representantes elegidos","El poder pertenece exclusivamente al poder judicial","El poder lo tiene quien más recursos económicos posee"],c:1},
+
+{sec:2,a:"Ciencias Sociales",s:"Formación Cívica - Democracia",d:"intermedio",
+t:"¿Cuántos poderes conforman el Estado mexicano según la Constitución Política?",
+o:["Dos: Ejecutivo y Legislativo","Tres: Ejecutivo, Legislativo y Judicial","Cuatro: Ejecutivo, Legislativo, Judicial y Electoral","Cinco: incluyendo el Militar"],c:1},
+
+{sec:2,a:"Ciencias Sociales",s:"Formación Cívica - Ciudadanía",d:"intermedio",
+t:"¿Cuál de las siguientes opciones describe mejor el concepto de «ciudadanía democrática»?",
+o:["Votar cada seis años y no participar en ninguna otra actividad política","Participar activamente en la vida pública, respetar derechos y cumplir obligaciones","Obedecer todas las leyes sin cuestionarlas","Pertenecer a un partido político"],c:1},
+
+{sec:2,a:"Ciencias Sociales",s:"Formación Cívica - Diversidad",d:"intermedio",
+t:"¿Qué actitud promueve el respeto a la diversidad cultural en una sociedad?",
+o:["Tolerar solo las costumbres similares a las propias","Ignorar las diferencias culturales","Reconocer y valorar las distintas manifestaciones culturales como parte de la riqueza social","Imponer una sola cultura a todos los grupos"],c:2},
+
+{sec:2,a:"Ciencias Sociales",s:"Historia - Revolución Industrial",d:"intermedio",
+t:"¿Cuál fue el principal impacto social de la Revolución Industrial en el siglo XVIII-XIX?",
+o:["La eliminación de las desigualdades económicas","El surgimiento de la clase obrera y nuevas condiciones laborales, frecuentemente precarias","La distribución equitativa de la riqueza entre campesinos y nobles","El abandono de la agricultura como actividad productiva"],c:1},
+
+{sec:2,a:"Ciencias Sociales",s:"Geografía - Globalización",d:"intermedio",
+t:"¿Cómo se define la globalización en el contexto de las ciencias sociales?",
+o:["El proceso de aislamiento económico de los países en desarrollo","El proceso de interconexión mundial de economías, culturas e información","La unificación política de todos los países en un solo gobierno","La homogeneización de las lenguas del mundo"],c:1},
+
+{sec:2,a:"Ciencias Sociales",s:"Historia - Segunda Guerra Mundial",d:"intermedio",
+t:"¿Cuáles fueron los principales países del bando Aliado en la Segunda Guerra Mundial?",
+o:["Alemania, Italia y Japón","Estados Unidos, Reino Unido y la URSS","España, Portugal y Francia","México, Brasil y Argentina"],c:1},
+
+{sec:2,a:"Ciencias Sociales",s:"Formación Cívica - Estado mexicano",d:"intermedio",
+t:"¿Cuál de los siguientes es un derecho constitucional de los ciudadanos mexicanos?",
+o:["Portar armas de fuego sin restricciones","Acceder a la educación pública gratuita","No pagar impuestos si se está de acuerdo con las leyes","Elegir el idioma oficial del país"],c:1},
+];
+
+// ─── SECCIÓN 3: BACHILLERATO / ESPECIALIDAD (60 reactivos) ──────────
+// Física: 20 | Biología: 20 | Química: 20
+
+const SEC3_FISICA = [
+{sec:3,a:"Física",s:"Vectores y notación científica",d:"avanzado",
+t:"¿Cuál de los siguientes es un ejemplo correcto de notación científica?",
+o:["0.000045 = 45 × 10⁻⁶","0.000045 = 4.5 × 10⁻⁵","0.000045 = 0.45 × 10⁻⁴","0.000045 = 45000 × 10⁻⁹"],c:1},
+
+{sec:3,a:"Física",s:"Vectores y notación científica",d:"avanzado",
+t:"Dos vectores de igual magnitud (5 N cada uno) forman un ángulo de 90° entre sí. ¿Cuál es la magnitud de su resultante?",
+o:["5 N","7.07 N","10 N","12.5 N"],c:1},
+
+{sec:3,a:"Física",s:"Movimiento en 1 y 2 dimensiones",d:"avanzado",
+t:"Un proyectil se lanza horizontalmente desde una altura de 80 m con una velocidad de 20 m/s (g = 10 m/s²). ¿Cuánto tarda en llegar al suelo?",
+o:["2 s","3 s","4 s","5 s"],c:2},
+
+{sec:3,a:"Física",s:"Movimiento en 1 y 2 dimensiones",d:"avanzado",
+t:"¿Cuál es la distancia recorrida por un cuerpo que parte del reposo con aceleración de 5 m/s² durante 6 segundos?",
+o:["30 m","60 m","90 m","120 m"],c:2},
+
+{sec:3,a:"Física",s:"Leyes de Newton",d:"avanzado",
+t:"Una fuerza neta de 40 N actúa sobre una masa de 8 kg. ¿Cuál es la aceleración resultante?",
+o:["3 m/s²","5 m/s²","8 m/s²","10 m/s²"],c:1},
+
+{sec:3,a:"Física",s:"Leyes de Newton",d:"avanzado",
+t:"¿Cuál es la fuerza de gravedad que actúa sobre un cuerpo de 70 kg? (g = 9.8 m/s²)",
+o:["686 N","700 N","640 N","70 N"],c:0},
+
+{sec:3,a:"Física",s:"Trabajo y energía",d:"avanzado",
+t:"¿Cuánto trabajo realiza una fuerza de 50 N al desplazar un objeto 8 m en la dirección de la fuerza?",
+o:["200 J","300 J","400 J","500 J"],c:2},
+
+{sec:3,a:"Física",s:"Trabajo y energía",d:"avanzado",
+t:"Un objeto de 4 kg se eleva 5 m. ¿Cuánta energía potencial gravitacional adquiere? (g = 10 m/s²)",
+o:["20 J","100 J","200 J","400 J"],c:2},
+
+{sec:3,a:"Física",s:"Trabajo y energía",d:"avanzado",
+t:"¿Cuál es la potencia desarrollada si se realiza un trabajo de 600 J en 3 segundos?",
+o:["100 W","150 W","200 W","300 W"],c:2},
+
+{sec:3,a:"Física",s:"Hidráulica",d:"avanzado",
+t:"El Principio de Arquímedes establece que un cuerpo sumergido en un fluido experimenta:",
+o:["Una fuerza hacia abajo igual a su peso","Una fuerza hacia arriba igual al peso del fluido desplazado","Una fuerza lateral igual a la presión del fluido","Una fuerza nula si el cuerpo es más denso que el fluido"],c:1},
+
+{sec:3,a:"Física",s:"Hidráulica",d:"avanzado",
+t:"La presión ejercida por un fluido en reposo depende de:",
+o:["Solo la temperatura del fluido","Solo la velocidad del fluido","La densidad del fluido, la gravedad y la profundidad","El volumen total del recipiente"],c:2},
+
+{sec:3,a:"Física",s:"Termodinámica",d:"avanzado",
+t:"¿Qué proceso termodinámico ocurre a temperatura constante?",
+o:["Adiabático","Isocórico","Isobárico","Isotérmico"],c:3},
+
+{sec:3,a:"Física",s:"Termodinámica",d:"avanzado",
+t:"La Primera Ley de la Termodinámica establece que:",
+o:["El calor siempre fluye del cuerpo más frío al más caliente","La energía interna de un sistema aislado permanece constante","La entropía siempre disminuye en procesos espontáneos","El calor y el trabajo no pueden convertirse entre sí"],c:1},
+
+{sec:3,a:"Física",s:"Termodinámica",d:"avanzado",
+t:"¿Cuánto calor se necesita para elevar 200 g de agua de 20 °C a 70 °C? (calor específico del agua = 4.18 J/g·°C)",
+o:["4180 J","8360 J","16720 J","41800 J"],c:3},
+
+{sec:3,a:"Física",s:"Electricidad",d:"avanzado",
+t:"¿Cuál es la corriente eléctrica en un circuito con voltaje de 120 V y resistencia de 30 Ω?",
+o:["2 A","3 A","4 A","5 A"],c:2},
+
+{sec:3,a:"Física",s:"Electricidad",d:"avanzado",
+t:"La potencia eléctrica consumida por un aparato de 5 A a 220 V es:",
+o:["44 W","440 W","1100 W","2200 W"],c:2},
+
+{sec:3,a:"Física",s:"Magnetismo",d:"avanzado",
+t:"¿Cuál de los siguientes instrumentos médicos se basa en el fenómeno del electromagnetismo?",
+o:["Estetoscopio","Resonancia Magnética (IRM)","Espirómetro","Termómetro clínico"],c:1},
+
+{sec:3,a:"Física",s:"Gravedad y Kepler",d:"avanzado",
+t:"Según la Ley de Gravitación Universal de Newton, si se duplica la distancia entre dos masas, la fuerza gravitacional:",
+o:["Se duplica","Se cuadruplica","Se reduce a la mitad","Se reduce a una cuarta parte"],c:3},
+
+{sec:3,a:"Física",s:"Movimiento en 1 y 2 dimensiones",d:"avanzado",
+t:"¿Cuál es la velocidad de un cuerpo que parte del reposo con a = 8 m/s² después de 4 segundos?",
+o:["16 m/s","24 m/s","32 m/s","40 m/s"],c:2},
+
+{sec:3,a:"Física",s:"Trabajo y energía",d:"avanzado",
+t:"¿Cuál es la energía cinética de un objeto de 3 kg que se mueve a 10 m/s?",
+o:["30 J","100 J","150 J","300 J"],c:2},
+];
+
+const SEC3_BIOLOGIA = [
+{sec:3,a:"Biología",s:"Biomoléculas",d:"avanzado",
+t:"¿Cuál es la función principal de los lípidos en la membrana celular?",
+o:["Almacenar información genética","Catalizar reacciones bioquímicas","Formar la bicapa lipídica que da estructura y selectividad a la membrana","Transportar oxígeno en la sangre"],c:2},
+
+{sec:3,a:"Biología",s:"Biomoléculas",d:"avanzado",
+t:"¿Cuál es la diferencia estructural entre el ADN y el ARN?",
+o:["El ADN es de cadena simple; el ARN es de doble cadena","El ARN contiene desoxirribosa; el ADN contiene ribosa","El ARN contiene uracilo en lugar de timina y ribosa en lugar de desoxirribosa","Ambas moléculas son estructuralmente idénticas"],c:2},
+
+{sec:3,a:"Biología",s:"Biomoléculas",d:"avanzado",
+t:"¿Cuál es el monómero fundamental de las proteínas?",
+o:["Nucleótido","Glucosa","Aminoácido","Ácido graso"],c:2},
+
+{sec:3,a:"Biología",s:"Metabolismo celular",d:"avanzado",
+t:"¿En qué etapa del metabolismo celular se produce la mayor cantidad de ATP?",
+o:["Glucólisis","Ciclo de Krebs","Fosforilación oxidativa (cadena transportadora de electrones)","Fermentación láctica"],c:2},
+
+{sec:3,a:"Biología",s:"Metabolismo celular",d:"avanzado",
+t:"¿Cuál es el producto final de la glucólisis que ingresa al ciclo de Krebs?",
+o:["Glucosa 6-fosfato","Ácido pirúvico","Acetil-CoA","NADH"],c:2},
+
+{sec:3,a:"Biología",s:"Metabolismo celular",d:"avanzado",
+t:"¿Cuál es la función del ATP en el metabolismo celular?",
+o:["Almacenar información genética","Actuar como enzima reguladora","Funcionar como moneda energética universal de la célula","Transportar aminoácidos al ribosoma"],c:2},
+
+{sec:3,a:"Biología",s:"Genética - Mendel",d:"avanzado",
+t:"Al cruzar dos organismos heterocigotos (Aa × Aa), ¿cuál es la proporción fenotípica esperada?",
+o:["1:1","1:2:1","3:1","4:0"],c:2},
+
+{sec:3,a:"Biología",s:"Genética - Mendel",d:"avanzado",
+t:"¿Cuál de las siguientes afirmaciones corresponde a la Primera Ley de Mendel (Ley de la Segregación)?",
+o:["Los caracteres de los progenitores se mezclan en la descendencia","Los pares de alelos se separan durante la formación de gametos","Los genes de distintos cromosomas se heredan de forma independiente","Los genes dominantes siempre se expresan fenotípicamente"],c:1},
+
+{sec:3,a:"Biología",s:"Genética - Variaciones",d:"avanzado",
+t:"El daltonismo es un rasgo recesivo ligado al cromosoma X. Una mujer portadora (X^A X^a) y un hombre normal (X^A Y) tienen hijos. ¿Qué probabilidad tiene un varón de nacer daltónico?",
+o:["0%","25%","50%","100%"],c:2},
+
+{sec:3,a:"Biología",s:"Genética - Sutton y Morgan",d:"avanzado",
+t:"¿Cuál fue el principal aporte de la Teoría Cromosómica de Sutton y Morgan?",
+o:["Descubrieron la estructura del ADN en doble hélice","Demostraron que los genes se encuentran en los cromosomas y se heredan de forma ligada","Formularon las leyes de la segregación y distribución independiente","Describieron el proceso de la meiosis por primera vez"],c:1},
+
+{sec:3,a:"Biología",s:"Evolución",d:"avanzado",
+t:"¿Cuál es el mecanismo central de la teoría de la evolución de Darwin y Wallace?",
+o:["Mutación aleatoria sin dirección específica","Selección natural: los organismos más adaptados sobreviven y se reproducen más","Herencia de caracteres adquiridos durante la vida del individuo","Deriva génica en poblaciones pequeñas"],c:1},
+
+{sec:3,a:"Biología",s:"Evolución",d:"avanzado",
+t:"¿Cuál de las siguientes es una causa principal de variabilidad genética en las poblaciones?",
+o:["La reproducción asexual idéntica","Las mutaciones y la recombinación genética en la meiosis","La clonación artificial de individuos","La selección artificial realizada por el ser humano"],c:1},
+
+{sec:3,a:"Biología",s:"Sistemas del cuerpo humano",d:"avanzado",
+t:"¿Qué hormona secretada por el páncreas tiene la función de reducir la glucosa en sangre?",
+o:["Glucagón","Adrenalina","Insulina","Cortisol"],c:2},
+
+{sec:3,a:"Biología",s:"Sistemas del cuerpo humano",d:"avanzado",
+t:"¿Cuál es la función principal de los riñones en el organismo humano?",
+o:["Producir glóbulos rojos","Filtrar la sangre y eliminar desechos metabólicos a través de la orina","Sintetizar enzimas digestivas","Almacenar glucógeno"],c:1},
+
+{sec:3,a:"Biología",s:"Sistemas del cuerpo humano",d:"avanzado",
+t:"¿En qué parte del intestino delgado se absorbe la mayor cantidad de nutrientes?",
+o:["Duodeno","Yeyuno","Íleon","Colon"],c:1},
+
+{sec:3,a:"Biología",s:"Sistemas del cuerpo humano",d:"avanzado",
+t:"¿Cuál es el nombre de la neurona que conduce los impulsos nerviosos desde los órganos sensoriales hacia el sistema nervioso central?",
+o:["Neurona motora","Neurona aferente (sensitiva)","Interneurona","Neurona eferente"],c:1},
+
+{sec:3,a:"Biología",s:"Biodiversidad y clasificación",d:"avanzado",
+t:"¿Cuál es la diferencia fundamental entre el dominio Eubacteria y el dominio Archaea?",
+o:["Las arqueas tienen núcleo definido; las bacterias no","Las arqueas viven en ambientes extremos y tienen diferencias bioquímicas en su membrana; las bacterias son el grupo más común","Las bacterias son eucariotas; las arqueas son procariotas","No existe diferencia entre ambos dominios"],c:1},
+
+{sec:3,a:"Biología",s:"Biotecnología",d:"avanzado",
+t:"¿Cuál es una aplicación moderna de la biotecnología en el área de la salud?",
+o:["El uso del microscopio óptico para observar bacterias","La producción de insulina humana mediante bacterias modificadas genéticamente","La extracción de vitaminas de plantas medicinales","El diagnóstico clínico mediante historia clínica"],c:1},
+
+{sec:3,a:"Biología",s:"Biomoléculas",d:"avanzado",
+t:"¿Cuál es el proceso por el que la información del ARNm es usada para sintetizar una proteína?",
+o:["Replicación","Transcripción","Traducción","Recombinación"],c:2},
+
+{sec:3,a:"Biología",s:"Tipos de reproducción",d:"avanzado",
+t:"¿Cuál es la ventaja principal de la reproducción sexual sobre la asexual desde el punto de vista evolutivo?",
+o:["Produce mayor número de descendientes","Es más rápida que la reproducción asexual","Genera variabilidad genética, favoreciendo la adaptación","No requiere gasto energético del organismo"],c:2},
+];
+
+const SEC3_QUIMICA = [
+{sec:3,a:"Química",s:"Modelo atómico",d:"avanzado",
+t:"¿Cuál es el número de electrones en la capa de valencia del átomo de cloro (número atómico = 17)?",
+o:["5","6","7","8"],c:2},
+
+{sec:3,a:"Química",s:"Modelo atómico",d:"avanzado",
+t:"¿Qué son los isótopos de un elemento?",
+o:["Átomos con distinto número atómico pero igual masa atómica","Átomos del mismo elemento con igual número de protones pero diferente número de neutrones","Átomos de diferentes elementos con la misma masa atómica","Iones con carga positiva del mismo elemento"],c:1},
+
+{sec:3,a:"Química",s:"Configuración electrónica",d:"avanzado",
+t:"¿Cuál es la configuración electrónica del sodio (Na, Z = 11)?",
+o:["1s² 2s² 2p⁶ 3s¹","1s² 2s² 2p⁵","1s² 2s² 2p⁶ 3s²","1s² 2s² 2p⁶"],c:0},
+
+{sec:3,a:"Química",s:"Tabla periódica",d:"avanzado",
+t:"¿Qué propiedad periódica aumenta de izquierda a derecha en un mismo período de la tabla periódica?",
+o:["Radio atómico","Electronegatividad","Masa atómica","Carácter metálico"],c:1},
+
+{sec:3,a:"Química",s:"Tabla periódica",d:"avanzado",
+t:"¿En qué bloque de la tabla periódica se encuentran los elementos de transición?",
+o:["Bloque s","Bloque p","Bloque d","Bloque f"],c:2},
+
+{sec:3,a:"Química",s:"Enlace químico",d:"avanzado",
+t:"¿Qué tipo de enlace se forma entre el Na⁺ y el Cl⁻ en el NaCl?",
+o:["Enlace covalente polar","Enlace covalente apolar","Enlace metálico","Enlace iónico"],c:3},
+
+{sec:3,a:"Química",s:"Enlace químico",d:"avanzado",
+t:"¿Cuál de las siguientes moléculas tiene enlace covalente apolar?",
+o:["HCl","H₂O","N₂","NH₃"],c:2},
+
+{sec:3,a:"Química",s:"Enlace químico",d:"avanzado",
+t:"¿Cuál de las siguientes propiedades es característica de los compuestos iónicos?",
+o:["Son gaseosos a temperatura ambiente","Tienen bajo punto de fusión","Conducen la electricidad cuando están disueltos en agua","Son insolubles en agua"],c:2},
+
+{sec:3,a:"Química",s:"Nomenclatura inorgánica",d:"avanzado",
+t:"¿Cuál es el nombre del compuesto H₂SO₄ según la nomenclatura IUPAC?",
+o:["Ácido clorhídrico","Ácido sulfuroso","Ácido sulfúrico","Ácido nítrico"],c:2},
+
+{sec:3,a:"Química",s:"Nomenclatura inorgánica",d:"avanzado",
+t:"¿Cuál es la fórmula del hidróxido de calcio?",
+o:["CaO","Ca(OH)₂","CaCl₂","CaCO₃"],c:1},
+
+{sec:3,a:"Química",s:"Estequiometría",d:"avanzado",
+t:"¿Cuántas partículas contiene exactamente 1 mol de cualquier sustancia?",
+o:["1.0 × 10²³","6.022 × 10²³","6.022 × 10²²","1.008 × 10²⁴"],c:1},
+
+{sec:3,a:"Química",s:"Estequiometría",d:"avanzado",
+t:"¿Cuál es la masa molar del agua (H₂O)? (H = 1 g/mol, O = 16 g/mol)",
+o:["8 g/mol","17 g/mol","18 g/mol","20 g/mol"],c:2},
+
+{sec:3,a:"Química",s:"Estequiometría",d:"avanzado",
+t:"En la reacción: 2H₂ + O₂ → 2H₂O, si reaccionan 4 moles de H₂, ¿cuántos moles de H₂O se producen?",
+o:["2 moles","4 moles","6 moles","8 moles"],c:1},
+
+{sec:3,a:"Química",s:"Velocidad y calor de reacción",d:"avanzado",
+t:"¿Cuál de los siguientes factores NO aumenta la velocidad de una reacción química?",
+o:["Aumentar la temperatura","Añadir un catalizador","Aumentar la concentración de reactivos","Disminuir la superficie de contacto"],c:3},
+
+{sec:3,a:"Química",s:"Contaminación",d:"avanzado",
+t:"¿Cuál de los siguientes gases es considerado el principal contaminante del aire proveniente de la combustión de vehículos?",
+o:["Dióxido de carbono (CO₂) y monóxido de carbono (CO)","Nitrógeno molecular (N₂)","Vapor de agua (H₂O)","Oxígeno (O₂)"],c:0},
+
+{sec:3,a:"Química",s:"Sistemas dispersos",d:"avanzado",
+t:"¿Cuál es la unidad de concentración que expresa los moles de soluto por litro de solución?",
+o:["Porcentaje en masa","Molaridad (mol/L)","Normalidad","Partes por millón (ppm)"],c:1},
+
+{sec:3,a:"Química",s:"Ácidos y bases",d:"avanzado",
+t:"Una solución tiene un pH de 9. ¿Cómo se clasifica esta solución?",
+o:["Ácida (pH < 7)","Neutra (pH = 7)","Básica o alcalina (pH > 7)","Tampón"],c:2},
+
+{sec:3,a:"Química",s:"Ácidos y bases",d:"avanzado",
+t:"¿Cuál es la concentración de iones H⁺ en una solución con pH = 4?",
+o:["10⁻² mol/L","10⁻⁴ mol/L","10⁻⁶ mol/L","10⁴ mol/L"],c:1},
+
+{sec:3,a:"Química",s:"Química orgánica",d:"avanzado",
+t:"¿Cuál es la hibridación del carbono que forma cuatro enlaces sencillos en una molécula orgánica?",
+o:["sp","sp²","sp³","sp⁴"],c:2},
+
+{sec:3,a:"Química",s:"Química orgánica",d:"avanzado",
+t:"¿Qué tipo de compuesto orgánico contiene el grupo funcional −COOH (carboxilo)?",
+o:["Alcohol","Éter","Ácido carboxílico","Aldehído"],c:2},
+];
+
+
+// ══════════════════════════════════════════════════════════════════════
+// ENSAMBLE DEL BANCO POR SECCIONES
+// Distribución oficial: S1=40 (Esp20+Mat20) | S2=80 (Esp20+Mat20+CN20+SS20) | S3=60 (Fis20+Bio20+Qui20)
+// ══════════════════════════════════════════════════════════════════════
+const SECTION_DEFS = [
+  {
+    num: 1,
+    label: "Sección 1 — Educación Primaria",
+    icon: "🏫",
+    pools: [
+      { pool: SEC1_ESPANOL,    take: 20 },
+      { pool: SEC1_MATEMATICAS, take: 20 },
+    ]
+  },
+  {
+    num: 2,
+    label: "Sección 2 — Educación Secundaria",
+    icon: "📚",
+    pools: [
+      { pool: SEC2_ESPANOL,    take: 20 },
+      { pool: SEC2_MATEMATICAS, take: 20 },
+      { pool: SEC2_CIENCIAS,   take: 20 },
+      { pool: SEC2_SOCIALES,   take: 20 },
+    ]
+  },
+  {
+    num: 3,
+    label: "Sección 3 — Bachillerato / Especialidad",
+    icon: "🩺",
+    pools: [
+      { pool: SEC3_FISICA,   take: 20 },
+      { pool: SEC3_BIOLOGIA, take: 20 },
+      { pool: SEC3_QUIMICA,  take: 20 },
+    ]
+  },
+];
+
+function shuffle(arr) { return [...arr].sort(() => Math.random() - 0.5); }
+
+function buildExamQuestions(mode) {
+  // mode: 'completo' (180), 'corto' (90 – half per pool), 'rapido' (45)
+  const factor = mode === 'rapido' ? 0.25 : mode === 'corto' ? 0.5 : 1;
+  let all = [];
+  let globalIdx = 0;
+
+  SECTION_DEFS.forEach(sec => {
+    sec.pools.forEach(({ pool, take }) => {
+      const n = Math.max(1, Math.round(take * factor));
+      const picked = shuffle(pool).slice(0, n);
+      picked.forEach(q => {
+        // Shuffle options while tracking correct answer
+        const opts = q.o.map((text, i) => ({ text, orig: i }));
+        opts.sort(() => Math.random() - 0.5);
+        const newCorrect = opts.findIndex(o => o.orig === q.c);
+        all.push({
+          ...q,
+          o: opts.map(o => o.text),
+          c: newCorrect,
+          globalIdx: globalIdx++
+        });
+      });
+    });
+  });
+  return all;
+}
+
+// ══════════════════════════════════
+// EXAM STATE
+// ══════════════════════════════════
+let state = {
+  user: {},
+  questions: [],
+  answers: [],
+  marked: [],
+  current: -1,
+  startTime: null,
+  timerInterval: null,
+  totalSeconds: 0,
+  finished: false,
+};
+
+function startExam() {
+  const nombre = document.getElementById('inp-nombre').value.trim();
+  const ficha = document.getElementById('inp-ficha').value.trim();
+  const carrera = document.getElementById('inp-carrera').value;
+  const mode = document.getElementById('inp-numreac').value;
+
+  if (!nombre || !ficha || !carrera) {
+    alert('Por favor completa todos los campos obligatorios (*).');
+    return;
+  }
+
+  state.user = {
+    nombre,
+    ficha,
+    carrera,
+    fecha: new Date().toLocaleString('es-MX'),
+  };
+
+  showScreen('screen-loading');
+
+  setTimeout(() => {
+    state.questions = buildExamQuestions(mode);
+    state.answers = new Array(state.questions.length).fill(null);
+    state.marked = new Array(state.questions.length).fill(false);
+    state.current = -1;
+    state.startTime = Date.now();
+    state.totalSeconds = mode === 'rapido' ? 45*60 : mode === 'corto' ? 90*60 : 150*60;
+    state.finished = false;
+
+    loadState();
+
+    showScreen('screen-exam');
+    buildGridMenu();
+    startTimer();
+  }, 800);
+}
+
+function showScreen(id) {
+  ['screen-login','screen-loading','screen-exam','screen-results'].forEach(s => {
+    document.getElementById(s).classList.toggle('hidden', s !== id);
+  });
+}
+
+// ── TIMER ──
+function startTimer() {
+  clearInterval(state.timerInterval);
+  state.timerInterval = setInterval(tickTimer, 1000);
+}
+
+function tickTimer() {
+  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+  const remaining = Math.max(0, state.totalSeconds - elapsed);
+  updateTimerDisplay(remaining);
+  if (remaining === 0) {
+    clearInterval(state.timerInterval);
+    finishExam();
+  }
+  saveState();
+}
+
+function updateTimerDisplay(seconds) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  const str = h > 0
+    ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`
+    : `${m}:${String(s).padStart(2,'0')}`;
+  document.getElementById('timer-display').textContent = str;
+  const box = document.getElementById('timer-box');
+  box.className = 'timer-box';
+  if (seconds < 300) box.classList.add('danger');
+  else if (seconds < 600) box.classList.add('warn');
+}
+
+// ── GRID MENU ──
+function buildGridMenu() {
+  const container = document.getElementById('grid-area-container');
+  container.innerHTML = '';
+
+  // Build section groups from the questions already in state (they carry sec + a)
+  // Group: Sección → Área → [indices]
+  const secMap = {}; // secNum → { label, icon, areas: { areaName: [idx] } }
+
+  state.questions.forEach((q, i) => {
+    const snum = q.sec;
+    if (!secMap[snum]) {
+      const def = SECTION_DEFS.find(d => d.num === snum);
+      secMap[snum] = { label: def ? def.label : `Sección ${snum}`, icon: def ? def.icon : '📋', areas: {} };
+    }
+    const aKey = q.a;
+    if (!secMap[snum].areas[aKey]) secMap[snum].areas[aKey] = [];
+    secMap[snum].areas[aKey].push(i);
+  });
+
+  Object.entries(secMap).sort(([a],[b]) => a-b).forEach(([snum, sec]) => {
+    // Section header
+    const secHeader = document.createElement('div');
+    secHeader.style.cssText = 'margin-bottom:8px; margin-top:8px; padding:10px 14px; background:var(--surface2); border:1px solid var(--border); border-radius:10px; display:flex; align-items:center; gap:10px;';
+    const totalQ = Object.values(sec.areas).flat().length;
+    secHeader.innerHTML = `
+      <span style="font-size:20px">${sec.icon}</span>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:var(--text)">${sec.label}</div>
+        <div style="font-size:11px;color:var(--text3)">${totalQ} reactivos</div>
+      </div>
+      <span style="margin-left:auto;font-size:12px;color:var(--text3)" id="sec-pct-${snum}">0 / ${totalQ}</span>
+    `;
+    container.appendChild(secHeader);
+
+    // Area sub-sections
+    Object.entries(sec.areas).forEach(([area, indices]) => {
+      const section = document.createElement('div');
+      section.className = 'area-section';
+      section.id = `area-section-${snum}-${area.replace(/\s/g,'-')}`;
+
+      const header = document.createElement('div');
+      header.className = 'area-section-header';
+      header.innerHTML = `
+        <h3>${area}</h3>
+        <span class="area-badge">${indices.length} reactivos</span>
+        <span class="area-pct" id="pct-${snum}-${area.replace(/\s/g,'-')}">0%</span>
+      `;
+
+      const grid = document.createElement('div');
+      grid.className = 'area-grid';
+      indices.forEach(i => {
+        const btn = document.createElement('button');
+        btn.className = 'grid-q-btn';
+        btn.id = `gqbtn-${i}`;
+        btn.innerHTML = `${i+1}<span class="check-icon">✓</span>`;
+        btn.title = `Reactivo ${i+1} — ${state.questions[i].s}`;
+        btn.onclick = () => openDrawer(i);
+        grid.appendChild(btn);
+      });
+
+      section.appendChild(header);
+      section.appendChild(grid);
+      container.appendChild(section);
+    });
+  });
+
+  updateGridMenu();
+}
+
+function updateGridMenu() {
+  // Per-section and per-area counters
+  const secAnswered = {};
+  const secTotal = {};
+  const areaAnswered = {};
+  const areaTotal = {};
+
+  state.questions.forEach((q, i) => {
+    const snum = q.sec;
+    const aKey = `${snum}-${q.a.replace(/\s/g,'-')}`;
+    secTotal[snum] = (secTotal[snum] || 0) + 1;
+    areaTotal[aKey] = (areaTotal[aKey] || 0) + 1;
+    if (state.answers[i] !== null) {
+      secAnswered[snum] = (secAnswered[snum] || 0) + 1;
+      areaAnswered[aKey] = (areaAnswered[aKey] || 0) + 1;
+    }
+  });
+
+  // Update buttons
+  state.questions.forEach((_, i) => {
+    const btn = document.getElementById(`gqbtn-${i}`);
+    if (!btn) return;
+    const icon = btn.querySelector('.check-icon');
+    btn.className = 'grid-q-btn';
+    if (i === state.current && !document.getElementById('question-drawer').classList.contains('hidden')) {
+      btn.classList.add('current-open');
+      if (icon) icon.textContent = '';
+    } else if (state.marked[i]) {
+      btn.classList.add('marked');
+      if (icon) icon.textContent = '📌';
+    } else if (state.answers[i] !== null) {
+      btn.classList.add('answered');
+      if (icon) icon.textContent = '✓';
+    } else {
+      if (icon) icon.textContent = '';
+    }
+  });
+
+  // Update section counters
+  Object.keys(secTotal).forEach(snum => {
+    const el = document.getElementById(`sec-pct-${snum}`);
+    if (el) el.textContent = `${secAnswered[snum]||0} / ${secTotal[snum]}`;
+  });
+
+  // Update area percentages
+  Object.keys(areaTotal).forEach(aKey => {
+    const el = document.getElementById(`pct-${aKey}`);
+    const pct = Math.round(((areaAnswered[aKey]||0) / areaTotal[aKey]) * 100);
+    if (el) el.textContent = pct + '% respondido';
+  });
+
+  updateSidebar();
+  updateProgressBar();
+}
+
+function openDrawer(i) {
+  state.current = i;
+  document.getElementById('question-drawer').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  renderQuestion();
+}
+
+function closeDrawer() {
+  document.getElementById('question-drawer').classList.add('hidden');
+  document.body.style.overflow = '';
+  state.current = -1;
+  updateGridMenu();
+}
+
+// ── RENDER QUESTION (inside drawer) ──
+function renderQuestion() {
+  const q = state.questions[state.current];
+  const n = state.current;
+
+  document.getElementById('q-num').textContent = `Reactivo ${n+1} de ${state.questions.length}`;
+  document.getElementById('q-area').textContent = q.a + ' — ' + q.s;
+  const diffEl = document.getElementById('q-diff');
+  diffEl.textContent = q.d.charAt(0).toUpperCase() + q.d.slice(1);
+  diffEl.className = 'q-diff ' + q.d;
+  document.getElementById('q-marked-badge').classList.toggle('hidden', !state.marked[n]);
+  document.getElementById('btn-mark').textContent = state.marked[n] ? '📌 Desmarcar' : '📌 Marcar';
+
+  // Text
+  const textEl = document.getElementById('q-text');
+  const lines = q.t.split('\n\n');
+  if (lines.length > 1) {
+    textEl.innerHTML = `<div class="reading-passage">${escapeHTML(lines[0])}</div><div class="question-stem">${escapeHTML(lines.slice(1).join('\n\n'))}</div>`;
+  } else {
+    textEl.innerHTML = `<div class="question-stem">${escapeHTML(q.t)}</div>`;
+  }
+
+  // Options
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  const letters = ['A','B','C','D'];
+  q.o.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn' + (state.answers[n] === i ? ' selected' : '');
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${escapeHTML(opt)}</span>`;
+    btn.onclick = () => selectAnswer(i);
+    grid.appendChild(btn);
+  });
+
+  // Nav
+  document.getElementById('btn-prev').disabled = n === 0;
+  document.getElementById('btn-next').textContent = n === state.questions.length - 1 ? '✓ Terminar' : 'Siguiente →';
+
+  // Scroll drawer body to top
+  document.querySelector('.drawer-body').scrollTop = 0;
+
+  updateGridMenu();
+}
+
+function escapeHTML(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function selectAnswer(i) {
+  if (state.finished) return;
+  state.answers[state.current] = i;
+  renderQuestion();
+  saveState();
+}
+
+function navigate(dir) {
+  const next = state.current + dir;
+  if (next < 0) { closeDrawer(); return; }
+  if (next >= state.questions.length) { confirmFinish(); return; }
+  state.current = next;
+  renderQuestion();
+}
+
+function toggleMark() {
+  state.marked[state.current] = !state.marked[state.current];
+  renderQuestion();
+  saveState();
+}
+
+// ── SIDEBAR STATS ──
+function updateSidebar() {
+  const answered = state.answers.filter(a => a !== null).length;
+  const marked = state.marked.filter(Boolean).length;
+  const total = state.questions.length;
+  document.getElementById('sb-answered').textContent = answered;
+  document.getElementById('sb-unanswered').textContent = total - answered;
+  document.getElementById('sb-marked').textContent = marked;
+  document.getElementById('topbar-answered').textContent = answered;
+  document.getElementById('topbar-total').textContent = total;
+}
+
+function updateProgressBar() {
+  const pct = (state.answers.filter(a => a !== null).length / state.questions.length) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+// ── MODAL ──
+function confirmFinish() {
+  const unanswered = state.answers.filter(a => a === null).length;
+  const marked = state.marked.filter(Boolean).length;
+  let msg = '';
+  if (unanswered > 0) msg += `Tienes <strong>${unanswered}</strong> pregunta(s) sin responder. `;
+  if (marked > 0) msg += `Tienes <strong>${marked}</strong> pregunta(s) marcada(s) para revisar. `;
+  msg += '¿Deseas finalizar el simulacro?';
+  document.getElementById('modal-finish-msg').innerHTML = msg;
+  document.getElementById('modal-finish').classList.remove('hidden');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.add('hidden');
+}
+
+// ── FINISH & RESULTS ──
+function finishExam() {
+  closeModal('modal-finish');
+  clearInterval(state.timerInterval);
+  state.finished = true;
+
+  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+  const timeUsed = formatTime(elapsed);
+
+  // Scoring
+  let correct = 0, incorrect = 0, omit = 0;
+  const areaStats = {};
+  const diffStats = { basico: {c:0,t:0}, intermedio: {c:0,t:0}, avanzado: {c:0,t:0} };
+
+  state.questions.forEach((q, i) => {
+    const area = q.a;
+    if (!areaStats[area]) areaStats[area] = { c: 0, t: 0 };
+    areaStats[area].t++;
+    diffStats[q.d].t++;
+
+    if (state.answers[i] === null) {
+      omit++;
+    } else if (state.answers[i] === q.c) {
+      correct++;
+      areaStats[area].c++;
+      diffStats[q.d].c++;
+    } else {
+      incorrect++;
+    }
+  });
+
+  const total = state.questions.length;
+  const pct = Math.round((correct / total) * 100);
+
+  // Build results HTML
+  const resultsEl = document.getElementById('screen-results');
+
+  // Diagnosis
+  let diagnosis, diagColor;
+  if (pct >= 80) { diagnosis = '✅ Excelente desempeño'; diagColor = 'var(--correct)'; }
+  else if (pct >= 65) { diagnosis = '👍 Buen desempeño'; diagColor = 'var(--accent)'; }
+  else if (pct >= 50) { diagnosis = '⚠️ Desempeño regular'; diagColor = 'var(--warn)'; }
+  else { diagnosis = '❌ Necesita reforzamiento'; diagColor = 'var(--danger)'; }
+
+  // Area table rows
+  let areaRows = '';
+  Object.entries(areaStats).sort((a,b) => b[1].t - a[1].t).forEach(([area, s]) => {
+    const areaPct = Math.round((s.c / s.t) * 100);
+    const barColor = areaPct >= 70 ? 'var(--correct)' : areaPct >= 50 ? 'var(--warn)' : 'var(--danger)';
+    areaRows += `<tr>
+      <td>${area}</td><td>${s.t}</td><td style="color:var(--correct)">${s.c}</td>
+      <td style="color:var(--danger)">${s.t - s.c}</td>
+      <td>
+        <span class="pct-bar-wrap"><span class="pct-bar-fill" style="width:${areaPct}%;background:${barColor}"></span></span>
+        <span style="font-size:12px;margin-left:6px;color:${barColor}">${areaPct}%</span>
+      </td>
+    </tr>`;
+  });
+
+  // Recommendations
+  const weak = Object.entries(areaStats).filter(([,s]) => (s.c/s.t) < 0.6).map(([a]) => a);
+  const strong = Object.entries(areaStats).filter(([,s]) => (s.c/s.t) >= 0.75).map(([a]) => a);
+
+  let recHTML = '';
+  if (weak.length > 0) recHTML += `<div class="rec-item"><span class="icon">📚</span><span>Refuerza los temas de: <strong>${weak.join(', ')}</strong>. Dedica al menos 2 horas por área.</span></div>`;
+  if (strong.length > 0) recHTML += `<div class="rec-item"><span class="icon">⭐</span><span>Tienes buen dominio en: <strong>${strong.join(', ')}</strong>. Mantén la práctica.</span></div>`;
+  if (omit > 0) recHTML += `<div class="rec-item"><span class="icon">⏱</span><span>Omitiste ${omit} reactivo(s). Practica la gestión del tiempo en futuras simulaciones.</span></div>`;
+  if (diffStats.avanzado.t > 0) {
+    const advPct = Math.round((diffStats.avanzado.c / diffStats.avanzado.t)*100);
+    recHTML += `<div class="rec-item"><span class="icon">🎯</span><span>En reactivos de nivel avanzado obtuviste ${advPct}%. ${advPct < 50 ? 'Trabaja en los conceptos de mayor profundidad.' : '¡Muy bien en preguntas difíciles!'}</span></div>`;
+  }
+
+  resultsEl.innerHTML = `
+    <div class="results-header">
+      <div class="big-score">${pct}%</div>
+      <div class="score-label">de aciertos</div>
+      <h2 style="color:${diagColor}">${diagnosis}</h2>
+      <div class="meta">${state.user.nombre} &nbsp;|&nbsp; Ficha: ${state.user.ficha} &nbsp;|&nbsp; ${state.user.carrera}</div>
+      <div class="meta" style="margin-top:4px">${state.user.fecha} &nbsp;|&nbsp; Tiempo utilizado: ${timeUsed}</div>
+    </div>
+
+    <div class="results-grid">
+      <div class="stat-card correct"><div class="num">${correct}</div><div class="lbl">Aciertos</div></div>
+      <div class="stat-card incorrect"><div class="num">${incorrect}</div><div class="lbl">Errores</div></div>
+      <div class="stat-card omit"><div class="num">${omit}</div><div class="lbl">Omisiones</div></div>
+    </div>
+
+    <div class="section-title">Rendimiento por área temática</div>
+    <table class="area-table">
+      <thead><tr><th>Área</th><th>Total</th><th>Correctas</th><th>Incorrectas</th><th>Rendimiento</th></tr></thead>
+      <tbody>${areaRows}</tbody>
+    </table>
+
+    <div class="section-title">Rendimiento por nivel de dificultad</div>
+    <div class="results-grid">
+      ${['basico','intermedio','avanzado'].map(d => `
+        <div class="stat-card" style="border-color:${d==='basico'?'var(--correct)':d==='intermedio'?'var(--warn)':'var(--danger)'}">
+          <div class="num" style="font-size:24px;color:${d==='basico'?'var(--correct)':d==='intermedio'?'var(--warn)':'var(--danger)'}">
+            ${diffStats[d].t>0?Math.round((diffStats[d].c/diffStats[d].t)*100):0}%
+          </div>
+          <div class="lbl">${d.charAt(0).toUpperCase()+d.slice(1)} (${diffStats[d].c}/${diffStats[d].t})</div>
+        </div>`).join('')}
+    </div>
+
+    <div class="recommendations">
+      <h3>📋 Recomendaciones de estudio</h3>
+      ${recHTML || '<div class="rec-item"><span class="icon">🏆</span><span>¡Excelente resultado! Continúa practicando para mantener tu nivel.</span></div>'}
+    </div>
+
+    <div class="results-actions">
+      <button class="btn btn-primary" onclick="exportJSON()">⬇ Exportar JSON</button>
+      <button class="btn btn-secondary" onclick="printResults()">🖨 Imprimir / PDF</button>
+      <button class="btn btn-secondary" onclick="reviewAnswers()">🔍 Revisar respuestas</button>
+      <button class="btn btn-success" onclick="restartExam()">🔄 Nuevo simulacro</button>
+    </div>
+  `;
+
+  showScreen('screen-results');
+  localStorage.removeItem('excoba_state');
+}
+
+function formatTime(seconds) {
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = seconds % 60;
+  if (h > 0) return `${h}h ${m}m ${s}s`;
+  return `${m}m ${s}s`;
+}
+
+// ── REVIEW MODE ──
+function reviewAnswers() {
+  const panel = document.getElementById('screen-results');
+  const reviewHTML = state.questions.map((q, i) => {
+    const userAns = state.answers[i];
+    const correct = q.c;
+    const letters = ['A','B','C','D'];
+    const opts = q.o.map((opt, j) => {
+      let cls = 'option-btn';
+      if (j === correct) cls += ' correct-show';
+      else if (j === userAns && j !== correct) cls += ' incorrect-show';
+      return `<button class="${cls}" style="margin-bottom:6px;width:100%;cursor:default">
+        <span class="opt-letter">${letters[j]}</span><span>${escapeHTML(opt)}</span>
+      </button>`;
+    }).join('');
+
+    const status = userAns === null ? '⬜ Omitida' : userAns === correct ? '✅ Correcta' : '❌ Incorrecta';
+
+    return `<div style="margin-bottom:24px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:18px">
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+        <span class="q-num">Reactivo ${i+1}</span>
+        <span class="q-area-tag">${q.a}</span>
+        <span style="font-size:12px;color:${userAns===correct?'var(--correct)':userAns===null?'var(--text3)':'var(--danger)'}">${status}</span>
+      </div>
+      <div class="q-text" style="margin-bottom:12px;font-size:14px">${escapeHTML(q.t)}</div>
+      ${opts}
+    </div>`;
+  }).join('');
+
+  panel.innerHTML = `
+    <div style="margin-bottom:20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+      <h2>Revisión de respuestas</h2>
+      <button class="btn btn-secondary" onclick="showResults()">← Volver al resumen</button>
+    </div>
+    ${reviewHTML}
+  `;
+}
+
+function showResults() {
+  finishExam(); // Re-render results (already finished, timer stopped)
+}
+
+// ── EXPORT ──
+function exportJSON() {
+  const elapsed = Math.floor((Date.now() - state.startTime) / 1000);
+  const data = {
+    usuario: state.user,
+    fecha: new Date().toISOString(),
+    tiempo_utilizado: formatTime(elapsed),
+    total: state.questions.length,
+    correctas: state.answers.filter((a,i) => a === state.questions[i].c && a !== null).length,
+    incorrectas: state.answers.filter((a,i) => a !== null && a !== state.questions[i].c).length,
+    omisiones: state.answers.filter(a => a === null).length,
+    detalle: state.questions.map((q,i) => ({
+      num: i+1,
+      area: q.a,
+      subtema: q.s,
+      dificultad: q.d,
+      respuesta_usuario: state.answers[i] !== null ? q.o[state.answers[i]] : null,
+      respuesta_correcta: q.o[q.c],
+      correcto: state.answers[i] === q.c,
+    }))
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = `EXCOBA_${state.user.ficha}_${new Date().toISOString().slice(0,10)}.json`;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function printResults() { window.print(); }
+
+function restartExam() {
+  clearInterval(state.timerInterval);
+  localStorage.removeItem('excoba_state');
+  location.reload();
+}
+
+// ── LOCAL STORAGE ──
+function saveState() {
+  try {
+    localStorage.setItem('excoba_state', JSON.stringify({
+      user: state.user,
+      questions: state.questions,
+      answers: state.answers,
+      marked: state.marked,
+      current: state.current,
+      startTime: state.startTime,
+      totalSeconds: state.totalSeconds,
+    }));
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('excoba_state');
+    if (!saved) return;
+    const s = JSON.parse(saved);
+    // Only restore if same user/ficha
+    if (s.user && s.user.ficha === state.user.ficha) {
+      if (confirm('Se encontró un simulacro guardado. ¿Deseas continuar desde donde lo dejaste?')) {
+        state.questions = s.questions;
+        state.answers = s.answers;
+        state.marked = s.marked;
+        state.current = s.current;
+        state.startTime = s.startTime; // keep original start
+        state.totalSeconds = s.totalSeconds;
+      } else {
+        localStorage.removeItem('excoba_state');
+      }
+    }
+  } catch(e) {}
+}
+</script>
+</body>
+</html>
